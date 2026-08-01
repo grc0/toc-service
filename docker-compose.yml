@@ -1,0 +1,13 @@
+services:
+  toc-service:
+    build:
+      context: .
+      dockerfile: go-app/Dockerfile
+    ports:
+      - "8000:8000"
+    volumes:
+      - usage-data:/app/data
+    restart: unless-stopped
+
+volumes:
+  usage-data:

@@ -1,0 +1,1655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PDF TOC Generator – Local</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Cdefs%3E%3ClinearGradient id='bg' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%231A2980'/%3E%3Cstop offset='1' stop-color='%2326D0CE'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect x='48' y='48' width='416' height='416' rx='64' fill='url(%23bg)'/%3E%3Crect x='152' y='120' width='208' height='272' rx='24' fill='%23fff' opacity='.95'/%3E%3Crect x='188' y='204' width='136' height='14' rx='7' fill='%231A2980' opacity='.7'/%3E%3Crect x='188' y='244' width='100' height='14' rx='7' fill='%231A2980' opacity='.45'/%3E%3Crect x='188' y='284' width='120' height='14' rx='7' fill='%231A2980' opacity='.25'/%3E%3C/svg%3E">
+  <script src="tailwindcss.js"></script>
+  <script>
+    tailwind.config = {
+      safelist: [
+        'bg-accent-600', 'text-accent-600', 'border-accent-600',
+        'text-base-400', 'text-base-500', 'hover:text-base-600',
+        'border-transparent',
+      ],
+      theme: {
+        extend: {
+          colors: {
+            accent: {
+              50:  'var(--c-accent-50)',
+              100: 'var(--c-accent-100)',
+              500: 'var(--c-accent-500)',
+              600: 'var(--c-accent-600)',
+              700: 'var(--c-accent-700)',
+              800: 'var(--c-accent-800)',
+            },
+            base: {
+              50:  'var(--c-base-50)',
+              100: 'var(--c-base-100)',
+              200: 'var(--c-base-200)',
+              300: 'var(--c-base-300)',
+              400: 'var(--c-base-400)',
+              500: 'var(--c-base-500)',
+              600: 'var(--c-base-600)',
+              700: 'var(--c-base-700)',
+              800: 'var(--c-base-800)',
+              900: 'var(--c-base-900)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --c-accent-50:  #ecfdf5; --c-accent-100: #d1fae5;
+      --c-accent-500: #10b981; --c-accent-600: #059669;
+      --c-accent-700: #047857; --c-accent-800: #065f46;
+      --c-base-50:  #fafafa; --c-base-100: #f4f4f5;
+      --c-base-200: #e4e4e7; --c-base-300: #d4d4d8;
+      --c-base-400: #a1a1aa; --c-base-500: #71717a;
+      --c-base-600: #52525b; --c-base-700: #3f3f46;
+      --c-base-800: #27272a; --c-base-900: #18181b;
+    }
+    .theme-mono {
+      --c-accent-50:  #fafafa; --c-accent-100: #f4f4f5;
+      --c-accent-500: #71717a; --c-accent-600: #18181b;
+      --c-accent-700: #27272a; --c-accent-800: #18181b;
+      --c-base-50:  #ffffff; --c-base-100: #fafafa;
+      --c-base-200: #e5e7eb; --c-base-300: #d1d5db;
+      --c-base-400: #9ca3af; --c-base-500: #6b7280;
+      --c-base-600: #4b5563; --c-base-700: #374151;
+      --c-base-800: #1f2937; --c-base-900: #111827;
+    }
+    html { overflow-y: scroll; }
+    .drop-zone.drag-over { border-color: var(--c-accent-600); background-color: var(--c-accent-50); }
+    .file-item { transition: background-color 0.15s; }
+    .file-item.dragging { opacity: 0.4; }
+    .file-item.drag-over-item { border-top: 2px solid var(--c-accent-600); }
+    .drag-handle { cursor: grab; user-select: none; }
+    .drag-handle:active { cursor: grabbing; }
+    .sort-btn { transition: all 0.15s; }
+    .color-preview { display: inline-block; width: 10px; height: 10px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+    .theme-mono input[type="text"], .theme-mono select {
+      border-radius: 0 !important; border-top: none !important; border-left: none !important; border-right: none !important;
+      border-bottom: 1px solid var(--c-base-300) !important; background: transparent !important;
+    }
+    .theme-mono input[type="text"]:focus, .theme-mono select:focus {
+      border-bottom-color: var(--c-base-900) !important; box-shadow: none !important;
+    }
+  </style>
+</head>
+<body class="bg-base-50 min-h-screen">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-start">
+      <div class="flex items-center gap-3">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" class="h-10 w-10" role="img" aria-label="PDF TOC icon">
+          <defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1A2980"/><stop offset="1" stop-color="#26D0CE"/></linearGradient></defs>
+          <rect x="48" y="48" width="416" height="416" rx="64" fill="url(#bg)"/>
+          <rect x="152" y="120" width="208" height="272" rx="24" fill="#ffffff" opacity="0.95"/>
+          <rect x="188" y="204" width="136" height="14" rx="7" fill="#1A2980" opacity="0.7"/>
+          <rect x="188" y="244" width="100" height="14" rx="7" fill="#1A2980" opacity="0.45"/>
+          <rect x="188" y="284" width="120" height="14" rx="7" fill="#1A2980" opacity="0.25"/>
+        </svg>
+        <div>
+          <h1 class="text-2xl font-bold text-base-900" data-i18n="title"></h1>
+          <p class="text-base-500 mt-1" data-i18n="localModeSubtitle"></p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 mt-1">
+        <button onclick="toggleTheme()" id="theme-toggle"
+          class="p-1.5 rounded-md text-base-400 hover:text-base-600 hover:bg-base-100 transition-colors" title="Toggle theme">
+          <svg id="theme-icon-emerald" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"/>
+          </svg>
+          <svg id="theme-icon-mono" class="h-4 w-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z"/>
+          </svg>
+        </button>
+        <div class="flex items-center gap-1">
+          <button onclick="setLang('en')" id="lang-en" class="px-2 py-1 text-xs font-medium rounded transition-colors">EN</button>
+          <span class="text-base-300">|</span>
+          <button onclick="setLang('de')" id="lang-de" class="px-2 py-1 text-xs font-medium rounded transition-colors">DE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Status / Result Area -->
+    <div id="result-area" class="hidden mb-6">
+      <div id="status-processing" class="hidden flex items-center gap-3 p-4 bg-accent-50 rounded-lg">
+        <svg class="animate-spin h-5 w-5 text-accent-600" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+        </svg>
+        <span class="text-sm text-accent-700" id="processing-text" data-i18n="statusProcessing"></span>
+      </div>
+      <div id="status-success" class="hidden p-4 bg-accent-50 rounded-lg">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-accent-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+          </svg>
+          <span id="success-text" class="text-sm text-accent-700"></span>
+        </div>
+        <a id="download-link" href="#" download
+          class="mt-3 inline-flex items-center gap-2 px-4 py-2 bg-accent-600 text-white text-sm font-medium rounded-md hover:bg-accent-700 transition-colors">
+          <svg class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+          </svg>
+          <span id="download-filename"></span>
+        </a>
+      </div>
+      <div id="status-error" class="hidden p-4 bg-red-50 rounded-lg">
+        <div class="flex items-center gap-3">
+          <svg class="h-5 w-5 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+          </svg>
+          <span id="error-text" class="text-sm text-red-700"></span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="flex border-b border-base-200 mb-6">
+      <button id="tab-a" onclick="switchTab('a')"
+        class="px-4 py-2 text-sm font-medium border-b-2 border-accent-600 text-accent-600"
+        data-i18n="tabA"></button>
+      <button id="tab-b" onclick="switchTab('b')"
+        class="px-4 py-2 text-sm font-medium border-b-2 border-transparent text-base-500 hover:text-base-700"
+        data-i18n="tabB"></button>
+    </div>
+
+    <!-- Modus A Panel -->
+    <div id="panel-a">
+      <div class="space-y-4">
+        <div class="grid grid-cols-[1fr_1fr_auto] gap-3">
+          <div>
+            <label for="title-a" class="block text-sm font-medium text-base-700 mb-1">
+              <span data-i18n="labelTitle"></span> <span class="text-base-400" data-i18n="labelOptional"></span>
+            </label>
+            <input type="text" id="title-a" data-i18n-placeholder="placeholderTitleA"
+              class="w-full px-3 py-2 border border-base-300 rounded-md text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+          </div>
+          <div>
+            <label for="subtitle-a" class="block text-sm font-medium text-base-700 mb-1">
+              <span data-i18n="labelSubtitle"></span> <span class="text-base-400" data-i18n="labelOptional"></span>
+            </label>
+            <input type="text" id="subtitle-a" data-i18n-placeholder="placeholderSubtitle"
+              class="w-full px-3 py-2 border border-base-300 rounded-md text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+          </div>
+          <div>
+            <label for="font-a" class="block text-sm font-medium text-base-700 mb-1" data-i18n="labelFont"></label>
+            <select id="font-a"
+              class="w-full px-3 py-2 border border-base-300 rounded-md text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white">
+              <option value="IBM Plex Sans">IBM Plex Sans</option>
+              <option value="Inter">Inter</option>
+              <option value="Roboto">Roboto</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1 -mt-2">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="merge-only-a"
+              class="h-4 w-4 rounded border-base-300 text-accent-600 focus:ring-accent-500"
+              onchange="toggleMergeOnly()">
+            <span class="text-sm text-base-600" data-i18n="labelMergeOnly"></span>
+          </label>
+        </div>
+
+        <div id="toc-options-a" class="flex flex-col gap-1 -mt-2">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="dots-a" checked class="h-4 w-4 rounded border-base-300 text-accent-600 focus:ring-accent-500">
+            <span class="text-sm text-base-600" data-i18n="labelDotLeaders"></span>
+          </label>
+          <div class="flex items-center gap-2">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="lines-a" checked class="h-4 w-4 rounded border-base-300 text-accent-600 focus:ring-accent-500" onchange="toggleColorPicker('a')">
+              <span class="text-sm text-base-600" data-i18n="labelShowLines"></span>
+            </label>
+            <span id="color-picker-a" class="inline-flex items-center gap-1.5">
+              <span id="color-dot-a" class="color-preview" style="background:#1A2980"></span>
+              <select id="color-select-a" onchange="onColorSelectChange('a')" class="px-1.5 py-0.5 border border-base-300 rounded text-xs focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white"></select>
+              <input type="text" id="color-custom-a" maxlength="7" placeholder="#FF5500" class="hidden w-20 px-2 py-0.5 border border-base-300 rounded text-xs font-mono focus:ring-2 focus:ring-accent-500 focus:border-accent-500" oninput="onCustomColorInput('a')">
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-base-600" data-i18n="labelBgColor"></span>
+            <span class="inline-flex items-center gap-1.5">
+              <span id="bg-dot-a" class="color-preview" style="background:#FFFFFF; border: 1px solid #d4d4d8"></span>
+              <select id="bg-select-a" onchange="onBgColorSelectChange('a')" class="px-1.5 py-0.5 border border-base-300 rounded text-xs focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white"></select>
+              <input type="text" id="bg-custom-a" maxlength="7" placeholder="#F3F4F6" class="hidden w-20 px-2 py-0.5 border border-base-300 rounded text-xs font-mono focus:ring-2 focus:ring-accent-500 focus:border-accent-500" oninput="onBgCustomColorInput('a')">
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-base-600" data-i18n="labelFontColor"></span>
+            <span class="inline-flex items-center gap-1.5">
+              <span id="fc-dot-a" class="color-preview" style="background:#000000"></span>
+              <select id="fc-select-a" onchange="onFontColorSelectChange('a')" class="px-1.5 py-0.5 border border-base-300 rounded text-xs focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white"></select>
+              <input type="text" id="fc-custom-a" maxlength="7" placeholder="#333333" class="hidden w-20 px-2 py-0.5 border border-base-300 rounded text-xs font-mono focus:ring-2 focus:ring-accent-500 focus:border-accent-500" oninput="onFontColorCustomInput('a')">
+            </span>
+          </div>
+        </div>
+
+        <button id="btn-generate-a" onclick="generateA()" disabled
+          class="w-full py-2.5 px-4 bg-accent-600 text-white text-sm font-medium rounded-md hover:bg-accent-700 disabled:bg-base-300 disabled:cursor-not-allowed transition-colors"
+          data-i18n="btnGenerate"></button>
+
+        <div>
+          <label class="block text-sm font-medium text-base-700 mb-1" data-i18n="labelPdfFiles"></label>
+          <div id="dropzone-a"
+            class="drop-zone border-2 border-dashed border-base-300 rounded-lg p-8 text-center cursor-pointer hover:border-base-400 transition-colors"
+            onclick="document.getElementById('fileinput-a').click()">
+            <svg class="mx-auto h-10 w-10 text-base-400 mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+            </svg>
+            <p class="text-sm text-base-600" data-i18n-html="dropzoneText"></p>
+            <p class="text-xs text-base-400 mt-1" data-i18n="dropzoneHint"></p>
+          </div>
+          <input type="file" id="fileinput-a" multiple accept=".pdf" class="hidden" onchange="handleFilesA(this.files)">
+        </div>
+
+        <div id="filelist-a" class="hidden">
+          <div class="flex justify-between items-center mb-1">
+            <span class="text-sm font-medium text-base-700" data-i18n="selectedFiles"></span>
+            <div class="flex items-center gap-2">
+              <span class="text-xs text-base-400" data-i18n="sortLabel"></span>
+              <button onclick="sortFilesA('az')" class="sort-btn px-2 py-0.5 text-xs rounded border border-base-300 text-base-600 hover:bg-base-100 hover:border-base-400" data-i18n="sortAZ"></button>
+              <button onclick="sortFilesA('za')" class="sort-btn px-2 py-0.5 text-xs rounded border border-base-300 text-base-600 hover:bg-base-100 hover:border-base-400" data-i18n="sortZA"></button>
+              <span class="text-base-200">|</span>
+              <button onclick="clearFilesA()" class="text-xs text-red-500 hover:text-red-700" data-i18n="removeAll"></button>
+            </div>
+          </div>
+          <ul id="files-a" class="space-y-1"></ul>
+          <p class="text-xs text-base-400 mt-1.5" id="drag-hint"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Modus B Panel -->
+    <div id="panel-b" class="hidden">
+      <div class="space-y-4">
+        <div class="grid grid-cols-[1fr_1fr_auto] gap-3">
+          <div>
+            <label for="title-b" class="block text-sm font-medium text-base-700 mb-1">
+              <span data-i18n="labelTitle"></span> <span class="text-base-400" data-i18n="labelOptional"></span>
+            </label>
+            <input type="text" id="title-b" data-i18n-placeholder="placeholderTitleB"
+              class="w-full px-3 py-2 border border-base-300 rounded-md text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+          </div>
+          <div>
+            <label for="subtitle-b" class="block text-sm font-medium text-base-700 mb-1">
+              <span data-i18n="labelSubtitle"></span> <span class="text-base-400" data-i18n="labelOptional"></span>
+            </label>
+            <input type="text" id="subtitle-b" data-i18n-placeholder="placeholderSubtitle"
+              class="w-full px-3 py-2 border border-base-300 rounded-md text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500">
+          </div>
+          <div>
+            <label for="font-b" class="block text-sm font-medium text-base-700 mb-1" data-i18n="labelFont"></label>
+            <select id="font-b"
+              class="w-full px-3 py-2 border border-base-300 rounded-md text-sm focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white">
+              <option value="IBM Plex Sans">IBM Plex Sans</option>
+              <option value="Inter">Inter</option>
+              <option value="Roboto">Roboto</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-1 -mt-2">
+          <label class="flex items-center gap-2 cursor-pointer select-none">
+            <input type="checkbox" id="dots-b" checked class="h-4 w-4 rounded border-base-300 text-accent-600 focus:ring-accent-500">
+            <span class="text-sm text-base-600" data-i18n="labelDotLeaders"></span>
+          </label>
+          <div class="flex items-center gap-2">
+            <label class="flex items-center gap-2 cursor-pointer select-none">
+              <input type="checkbox" id="lines-b" checked class="h-4 w-4 rounded border-base-300 text-accent-600 focus:ring-accent-500" onchange="toggleColorPicker('b')">
+              <span class="text-sm text-base-600" data-i18n="labelShowLines"></span>
+            </label>
+            <span id="color-picker-b" class="inline-flex items-center gap-1.5">
+              <span id="color-dot-b" class="color-preview" style="background:#1A2980"></span>
+              <select id="color-select-b" onchange="onColorSelectChange('b')" class="px-1.5 py-0.5 border border-base-300 rounded text-xs focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white"></select>
+              <input type="text" id="color-custom-b" maxlength="7" placeholder="#FF5500" class="hidden w-20 px-2 py-0.5 border border-base-300 rounded text-xs font-mono focus:ring-2 focus:ring-accent-500 focus:border-accent-500" oninput="onCustomColorInput('b')">
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-base-600" data-i18n="labelBgColor"></span>
+            <span class="inline-flex items-center gap-1.5">
+              <span id="bg-dot-b" class="color-preview" style="background:#FFFFFF; border: 1px solid #d4d4d8"></span>
+              <select id="bg-select-b" onchange="onBgColorSelectChange('b')" class="px-1.5 py-0.5 border border-base-300 rounded text-xs focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white"></select>
+              <input type="text" id="bg-custom-b" maxlength="7" placeholder="#F3F4F6" class="hidden w-20 px-2 py-0.5 border border-base-300 rounded text-xs font-mono focus:ring-2 focus:ring-accent-500 focus:border-accent-500" oninput="onBgCustomColorInput('b')">
+            </span>
+          </div>
+          <div class="flex items-center gap-2">
+            <span class="text-sm text-base-600" data-i18n="labelFontColor"></span>
+            <span class="inline-flex items-center gap-1.5">
+              <span id="fc-dot-b" class="color-preview" style="background:#000000"></span>
+              <select id="fc-select-b" onchange="onFontColorSelectChange('b')" class="px-1.5 py-0.5 border border-base-300 rounded text-xs focus:ring-2 focus:ring-accent-500 focus:border-accent-500 bg-white"></select>
+              <input type="text" id="fc-custom-b" maxlength="7" placeholder="#333333" class="hidden w-20 px-2 py-0.5 border border-base-300 rounded text-xs font-mono focus:ring-2 focus:ring-accent-500 focus:border-accent-500" oninput="onFontColorCustomInput('b')">
+            </span>
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-base-700 mb-1" data-i18n="labelPdfFile"></label>
+          <div class="flex items-center gap-2">
+            <input type="file" id="fileinput-pdf" accept=".pdf"
+              class="block w-full text-sm text-base-500 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-accent-50 file:text-accent-700 hover:file:bg-accent-100">
+          </div>
+          <p class="text-xs text-base-400 mt-1" data-i18n="pdfHint"></p>
+        </div>
+
+        <div>
+          <label class="block text-sm font-medium text-base-700 mb-1" data-i18n="labelJsonFile"></label>
+          <div class="flex items-center gap-2">
+            <input type="file" id="fileinput-json" accept=".json"
+              class="block w-full text-sm text-base-500 file:mr-3 file:py-2 file:px-4 file:rounded-md file:border-0 file:text-sm file:font-medium file:bg-accent-50 file:text-accent-700 hover:file:bg-accent-100">
+          </div>
+          <p class="text-xs text-base-400 mt-1">Format: [{"title": "...", "page": 1}, ...]</p>
+        </div>
+
+        <button id="btn-generate-b" onclick="generateB()"
+          class="w-full py-2.5 px-4 bg-accent-600 text-white text-sm font-medium rounded-md hover:bg-accent-700 disabled:bg-base-300 disabled:cursor-not-allowed transition-colors"
+          data-i18n="btnGenerate"></button>
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-12 pt-4 border-t border-base-200 text-center text-xs text-base-400">
+      <p class="mt-1">PDF Table of Content Service · <a href="index.html" class="text-accent-500 hover:text-accent-700 transition-colors" data-i18n="serverVersionLink"></a></p>
+    </div>
+  </div>
+
+  <script src="fontkit.umd.min.js"></script>
+  <script src="pdf-lib.min.js"></script>
+  <script>
+  // ══════════════════════════════════════════════════════════════════
+  // i18n
+  // ══════════════════════════════════════════════════════════════════
+
+  const i18n = {
+    de: {
+      title: 'PDF Inhaltsverzeichnis Generator',
+      localModeSubtitle: 'Lokale Version \u2013 l\u00e4uft komplett im Browser, kein Server n\u00f6tig',
+      tabA: 'Mehrere PDFs hochladen',
+      tabB: 'Bestehendes PDF + JSON',
+      labelTitle: 'Titel',
+      labelSubtitle: 'Untertitel',
+      labelFont: 'Schrift',
+      labelDotLeaders: 'Punkte zwischen Eintrag und Seitenzahl',
+      labelShowLines: 'Dekorative Balken ober-/unterhalb',
+      colorCustom: 'Eigene...',
+      labelBgColor: 'Hintergrundfarbe',
+      bgColorCustom: 'Eigene...',
+      labelFontColor: 'Schriftfarbe',
+      fontColorCustom: 'Eigene...',
+      labelOptional: '(optional)',
+      placeholderTitleA: 'z.B. Arbeitszeugnisse Christoph Graf',
+      placeholderTitleB: 'z.B. Aus- und Weiterbildungen',
+      placeholderSubtitle: 'z.B. Inhaltsverzeichnis',
+      labelPdfFiles: 'PDF-Dateien',
+      labelPdfFile: 'PDF-Datei',
+      labelJsonFile: 'JSON-Datei',
+      dropzoneText: 'PDF-Dateien hierher ziehen oder <span class="text-accent-600 font-medium">durchsuchen</span>',
+      dropzoneHint: 'Mehrere Dateien m\u00f6glich',
+      selectedFiles: 'Ausgew\u00e4hlte Dateien',
+      removeAll: 'Alle entfernen',
+      btnGenerate: 'Inhaltsverzeichnis generieren',
+      btnGenerating: 'Wird generiert...',
+      statusProcessing: 'PDF wird generiert...',
+      statusSuccess: 'PDF erfolgreich generiert',
+      errorUnknown: 'Unbekannter Fehler',
+      errorSelectBoth: 'Bitte PDF- und JSON-Datei ausw\u00e4hlen.',
+      pdfHint: 'Zusammengef\u00fcgtes PDF mit den Dokumenten',
+      sortAZ: 'A \u2192 Z',
+      sortZA: 'Z \u2192 A',
+      sortLabel: 'Sortierung:',
+      fallbackFilename: 'inhaltsverzeichnis.pdf',
+      labelMergeOnly: 'Nur zusammenf\u00fchren (kein sichtbares Inhaltsverzeichnis)',
+      btnMergeOnly: 'PDFs zusammenf\u00fchren',
+      serverVersionLink: 'Server-Version',
+      fontLoading: 'Schriftart wird geladen...',
+      fontLoadError: 'Schriftart konnte nicht geladen werden, verwende Helvetica.',
+      defaultTocLabel: 'Inhaltsverzeichnis',
+      errorCorruptPdf: 'PDF konnte nicht gelesen werden (besch\u00e4digt oder verschl\u00fcsselt)',
+      errorInvalidJson: 'Ung\u00fcltiges JSON',
+      errorNoPdfs: 'Keine PDF-Dateien ausgew\u00e4hlt.',
+      warnLargeFiles: 'Warnung: Die Gesamtgr\u00f6\u00dfe \u00fcberschreitet 200 MB. Die Verarbeitung kann langsam sein.',
+    },
+    en: {
+      title: 'PDF Table of Contents Generator',
+      localModeSubtitle: 'Local version \u2013 runs entirely in browser, no server required',
+      tabA: 'Upload multiple PDFs',
+      tabB: 'Existing PDF + JSON',
+      labelTitle: 'Title',
+      labelSubtitle: 'Subtitle',
+      labelFont: 'Font',
+      labelDotLeaders: 'Dot leaders between entry and page number',
+      labelShowLines: 'Decorative bars above/below',
+      colorCustom: 'Custom...',
+      labelBgColor: 'Background color',
+      bgColorCustom: 'Custom...',
+      labelFontColor: 'Font color',
+      fontColorCustom: 'Custom...',
+      labelOptional: '(optional)',
+      placeholderTitleA: 'e.g. Work References John Doe',
+      placeholderTitleB: 'e.g. Education & Training',
+      placeholderSubtitle: 'e.g. Table of Contents',
+      labelPdfFiles: 'PDF files',
+      labelPdfFile: 'PDF file',
+      labelJsonFile: 'JSON file',
+      dropzoneText: 'Drag PDF files here or <span class="text-accent-600 font-medium">browse</span>',
+      dropzoneHint: 'Multiple files supported',
+      selectedFiles: 'Selected files',
+      removeAll: 'Remove all',
+      btnGenerate: 'Generate table of contents',
+      btnGenerating: 'Generating...',
+      statusProcessing: 'Generating PDF...',
+      statusSuccess: 'PDF generated successfully',
+      errorUnknown: 'Unknown error',
+      errorSelectBoth: 'Please select both a PDF and a JSON file.',
+      pdfHint: 'Merged PDF containing the documents',
+      sortAZ: 'A \u2192 Z',
+      sortZA: 'Z \u2192 A',
+      sortLabel: 'Sort:',
+      fallbackFilename: 'table_of_contents.pdf',
+      labelMergeOnly: 'Merge only (no visible table of contents)',
+      btnMergeOnly: 'Merge PDFs',
+      serverVersionLink: 'Server version',
+      fontLoading: 'Loading font...',
+      fontLoadError: 'Could not load font, using Helvetica fallback.',
+      defaultTocLabel: 'Table of Contents',
+      errorCorruptPdf: 'Could not read PDF (corrupt or encrypted)',
+      errorInvalidJson: 'Invalid JSON',
+      errorNoPdfs: 'No PDF files selected.',
+      warnLargeFiles: 'Warning: Total size exceeds 200 MB. Processing may be slow.',
+    },
+  };
+
+  let currentLang = localStorage.getItem('toc-lang') || 'en';
+
+  function t(key) { return i18n[currentLang]?.[key] || i18n.en[key] || key; }
+
+  function setLang(lang) {
+    currentLang = lang;
+    localStorage.setItem('toc-lang', lang);
+    document.documentElement.lang = lang;
+    applyTranslations();
+    updateLangButtons();
+    if (selectedFilesA.length > 0) renderFileListA();
+    ['a', 'b'].forEach(tab => {
+      const cs = document.getElementById(`color-select-${tab}`).querySelector('option[value="_custom"]');
+      if (cs) cs.textContent = t('colorCustom');
+      const bs = document.getElementById(`bg-select-${tab}`).querySelector('option[value="_custom"]');
+      if (bs) bs.textContent = t('bgColorCustom');
+      const fs = document.getElementById(`fc-select-${tab}`).querySelector('option[value="_custom"]');
+      if (fs) fs.textContent = t('fontColorCustom');
+    });
+  }
+
+  function applyTranslations() {
+    document.querySelectorAll('[data-i18n]').forEach(el => { const k = el.getAttribute('data-i18n'); if (k) el.textContent = t(k); });
+    document.querySelectorAll('[data-i18n-html]').forEach(el => { const k = el.getAttribute('data-i18n-html'); if (k) el.innerHTML = t(k); });
+    document.querySelectorAll('[data-i18n-placeholder]').forEach(el => { const k = el.getAttribute('data-i18n-placeholder'); if (k) el.placeholder = t(k); });
+    document.title = t('title') + ' \u2013 Local';
+  }
+
+  function updateLangButtons() {
+    const btnDe = document.getElementById('lang-de'), btnEn = document.getElementById('lang-en');
+    if (currentLang === 'de') {
+      btnDe.classList.add('bg-accent-600', 'text-white'); btnDe.classList.remove('text-base-400', 'hover:text-base-600');
+      btnEn.classList.remove('bg-accent-600', 'text-white'); btnEn.classList.add('text-base-400', 'hover:text-base-600');
+    } else {
+      btnEn.classList.add('bg-accent-600', 'text-white'); btnEn.classList.remove('text-base-400', 'hover:text-base-600');
+      btnDe.classList.remove('bg-accent-600', 'text-white'); btnDe.classList.add('text-base-400', 'hover:text-base-600');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // State
+  // ══════════════════════════════════════════════════════════════════
+
+  let selectedFilesA = [];
+
+  // ══════════════════════════════════════════════════════════════════
+  // Color pickers (line / bg / font) — identical logic for both tabs
+  // ══════════════════════════════════════════════════════════════════
+
+  const PRESET_COLORS = [
+    ['#1A2980','Navy'],['#000000','Black'],['#FFFFFF','White'],['#2563EB','Blue'],
+    ['#0891B2','Teal'],['#059669','Green'],['#65A30D','Lime'],['#CA8A04','Gold'],
+    ['#EA580C','Orange'],['#DC2626','Red'],['#9333EA','Purple'],['#E84466','Pink'],['#4B5563','Gray'],
+  ];
+  const DEFAULT_COLOR = '#1A2980';
+  const selectedColors = { a: DEFAULT_COLOR, b: DEFAULT_COLOR };
+
+  const BG_PRESET_COLORS = [
+    ['#FFFFFF','White'],['#000000','Black'],['#F3F4F6','Light Gray'],['#FFFBEB','Cream'],
+    ['#EFF6FF','Light Blue'],['#F0FDF4','Light Green'],['#FDF2F8','Light Pink'],
+    ['#F5F3FF','Light Purple'],['#ECFDF5','Mint'],
+  ];
+  const DEFAULT_BG_COLOR = '#FFFFFF';
+  const selectedBgColors = { a: DEFAULT_BG_COLOR, b: DEFAULT_BG_COLOR };
+
+  const FONT_COLOR_PRESETS = [
+    ['#000000','Black'],['#FFFFFF','White'],['#1A2980','Navy'],['#2563EB','Blue'],
+    ['#0891B2','Teal'],['#059669','Green'],['#DC2626','Red'],['#9333EA','Purple'],['#4B5563','Gray'],
+  ];
+  const DEFAULT_FONT_COLOR = '#000000';
+  const selectedFontColors = { a: DEFAULT_FONT_COLOR, b: DEFAULT_FONT_COLOR };
+
+  function initColorDropdown(tab) {
+    const s = document.getElementById(`color-select-${tab}`); s.innerHTML = '';
+    for (const [hex, name] of PRESET_COLORS) { const o = document.createElement('option'); o.value = hex; o.textContent = `${name} (${hex})`; if (hex === DEFAULT_COLOR) o.selected = true; s.appendChild(o); }
+    const c = document.createElement('option'); c.value = '_custom'; c.textContent = t('colorCustom'); s.appendChild(c);
+  }
+  function onColorSelectChange(tab) {
+    const s = document.getElementById(`color-select-${tab}`), ci = document.getElementById(`color-custom-${tab}`), d = document.getElementById(`color-dot-${tab}`);
+    if (s.value === '_custom') { ci.classList.remove('hidden'); ci.focus(); } else { ci.classList.add('hidden'); ci.value = ''; selectedColors[tab] = s.value; d.style.backgroundColor = s.value; }
+  }
+  function onCustomColorInput(tab) {
+    let v = document.getElementById(`color-custom-${tab}`).value.trim(); if (!v.startsWith('#')) v = '#' + v;
+    if (/^#[0-9A-Fa-f]{6}$/.test(v)) { selectedColors[tab] = v.toUpperCase(); document.getElementById(`color-dot-${tab}`).style.backgroundColor = v; }
+  }
+  function getSelectedColor(tab) { return selectedColors[tab]; }
+
+  function initBgColorDropdown(tab) {
+    const s = document.getElementById(`bg-select-${tab}`); s.innerHTML = '';
+    for (const [hex, name] of BG_PRESET_COLORS) { const o = document.createElement('option'); o.value = hex; o.textContent = `${name} (${hex})`; if (hex === DEFAULT_BG_COLOR) o.selected = true; s.appendChild(o); }
+    const c = document.createElement('option'); c.value = '_custom'; c.textContent = t('bgColorCustom'); s.appendChild(c);
+  }
+  function onBgColorSelectChange(tab) {
+    const s = document.getElementById(`bg-select-${tab}`), ci = document.getElementById(`bg-custom-${tab}`), d = document.getElementById(`bg-dot-${tab}`);
+    if (s.value === '_custom') { ci.classList.remove('hidden'); ci.focus(); } else { ci.classList.add('hidden'); ci.value = ''; selectedBgColors[tab] = s.value; d.style.backgroundColor = s.value; }
+  }
+  function onBgCustomColorInput(tab) {
+    let v = document.getElementById(`bg-custom-${tab}`).value.trim(); if (!v.startsWith('#')) v = '#' + v;
+    if (/^#[0-9A-Fa-f]{6}$/.test(v)) { selectedBgColors[tab] = v.toUpperCase(); document.getElementById(`bg-dot-${tab}`).style.backgroundColor = v; }
+  }
+  function getSelectedBgColor(tab) { return selectedBgColors[tab]; }
+
+  function initFontColorDropdown(tab) {
+    const s = document.getElementById(`fc-select-${tab}`); s.innerHTML = '';
+    for (const [hex, name] of FONT_COLOR_PRESETS) { const o = document.createElement('option'); o.value = hex; o.textContent = `${name} (${hex})`; if (hex === DEFAULT_FONT_COLOR) o.selected = true; s.appendChild(o); }
+    const c = document.createElement('option'); c.value = '_custom'; c.textContent = t('fontColorCustom'); s.appendChild(c);
+  }
+  function onFontColorSelectChange(tab) {
+    const s = document.getElementById(`fc-select-${tab}`), ci = document.getElementById(`fc-custom-${tab}`), d = document.getElementById(`fc-dot-${tab}`);
+    if (s.value === '_custom') { ci.classList.remove('hidden'); ci.focus(); } else { ci.classList.add('hidden'); ci.value = ''; selectedFontColors[tab] = s.value; d.style.backgroundColor = s.value; }
+  }
+  function onFontColorCustomInput(tab) {
+    let v = document.getElementById(`fc-custom-${tab}`).value.trim(); if (!v.startsWith('#')) v = '#' + v;
+    if (/^#[0-9A-Fa-f]{6}$/.test(v)) { selectedFontColors[tab] = v.toUpperCase(); document.getElementById(`fc-dot-${tab}`).style.backgroundColor = v; }
+  }
+  function getSelectedFontColor(tab) { return selectedFontColors[tab]; }
+
+  function toggleMergeOnly() {
+    const checked = document.getElementById('merge-only-a').checked;
+    const opts = document.getElementById('toc-options-a'), btn = document.getElementById('btn-generate-a');
+    if (checked) { opts.classList.add('opacity-40', 'pointer-events-none'); btn.textContent = t('btnMergeOnly'); }
+    else { opts.classList.remove('opacity-40', 'pointer-events-none'); btn.textContent = t('btnGenerate'); }
+  }
+  function toggleColorPicker(tab) {
+    const checked = document.getElementById(`lines-${tab}`).checked;
+    document.getElementById(`color-picker-${tab}`).classList.toggle('hidden', !checked);
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Tab Switching
+  // ══════════════════════════════════════════════════════════════════
+
+  function switchTab(tab) {
+    const tA = document.getElementById('tab-a'), tB = document.getElementById('tab-b');
+    const pA = document.getElementById('panel-a'), pB = document.getElementById('panel-b');
+    if (tab === 'a') {
+      tA.classList.add('border-accent-600','text-accent-600'); tA.classList.remove('border-transparent','text-base-500');
+      tB.classList.remove('border-accent-600','text-accent-600'); tB.classList.add('border-transparent','text-base-500');
+      pA.classList.remove('hidden'); pB.classList.add('hidden');
+    } else {
+      tB.classList.add('border-accent-600','text-accent-600'); tB.classList.remove('border-transparent','text-base-500');
+      tA.classList.remove('border-accent-600','text-accent-600'); tA.classList.add('border-transparent','text-base-500');
+      pB.classList.remove('hidden'); pA.classList.add('hidden');
+    }
+    hideResult();
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Drag & Drop + File List (Mode A)
+  // ══════════════════════════════════════════════════════════════════
+
+  const dropzone = document.getElementById('dropzone-a');
+  dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('drag-over'); });
+  dropzone.addEventListener('dragleave', () => dropzone.classList.remove('drag-over'));
+  dropzone.addEventListener('drop', e => {
+    e.preventDefault(); dropzone.classList.remove('drag-over');
+    const files = Array.from(e.dataTransfer.files).filter(f => f.name.toLowerCase().endsWith('.pdf'));
+    if (files.length > 0) addFilesA(files);
+  });
+
+  function handleFilesA(fileList) { addFilesA(Array.from(fileList).filter(f => f.name.toLowerCase().endsWith('.pdf'))); }
+  function addFilesA(files) { selectedFilesA = [...selectedFilesA, ...files]; renderFileListA(); }
+  function removeFileA(i) { selectedFilesA.splice(i, 1); renderFileListA(); }
+  function clearFilesA() { selectedFilesA = []; renderFileListA(); document.getElementById('fileinput-a').value = ''; }
+  function sortFilesA(order) { selectedFilesA.sort((a, b) => { const na = a.name.toLowerCase(), nb = b.name.toLowerCase(); return order === 'az' ? na.localeCompare(nb) : nb.localeCompare(na); }); renderFileListA(); }
+  function moveFileA(from, to) { if (to < 0 || to >= selectedFilesA.length) return; const [item] = selectedFilesA.splice(from, 1); selectedFilesA.splice(to, 0, item); renderFileListA(); }
+
+  let dragFromIndex = null;
+
+  function renderFileListA() {
+    const list = document.getElementById('files-a'), container = document.getElementById('filelist-a');
+    const btn = document.getElementById('btn-generate-a'), hint = document.getElementById('drag-hint');
+    if (selectedFilesA.length === 0) { container.classList.add('hidden'); btn.disabled = true; return; }
+    container.classList.remove('hidden'); btn.disabled = false;
+    if (hint) hint.textContent = selectedFilesA.length > 1 ? (currentLang === 'de' ? '\u2195 Dateien per Drag & Drop oder Pfeile umsortieren' : '\u2195 Drag & drop or use arrows to reorder files') : '';
+    list.innerHTML = selectedFilesA.map((f, i) => `
+      <li class="file-item flex items-center px-2 py-1.5 bg-white rounded border border-base-200 text-sm gap-1"
+          draggable="true" data-index="${i}"
+          ondragstart="onDragStartFile(event,${i})" ondragover="onDragOverFile(event,${i})"
+          ondragleave="onDragLeaveFile(event)" ondrop="onDropFile(event,${i})" ondragend="onDragEndFile(event)">
+        <span class="drag-handle text-base-300 hover:text-base-500 px-1 text-base" title="Drag to reorder">\u2630</span>
+        <span class="text-base-700 truncate flex-1 min-w-0">${escapeHtml(f.name)}</span>
+        <div class="flex items-center gap-1 ml-1 flex-shrink-0">
+          <span class="text-base-400 text-xs">${formatSize(f.size)}</span>
+          <button onclick="moveFileA(${i},${i-1})" class="text-base-300 hover:text-base-600 text-xs px-0.5 ${i===0?'invisible':''}" title="Move up">\u25B2</button>
+          <button onclick="moveFileA(${i},${i+1})" class="text-base-300 hover:text-base-600 text-xs px-0.5 ${i===selectedFilesA.length-1?'invisible':''}" title="Move down">\u25BC</button>
+          <button onclick="removeFileA(${i})" class="text-base-400 hover:text-red-500 pl-1">&times;</button>
+        </div>
+      </li>`).join('');
+  }
+
+  function escapeHtml(s) { const d = document.createElement('div'); d.textContent = s; return d.innerHTML; }
+  function onDragStartFile(e, i) { dragFromIndex = i; e.currentTarget.classList.add('dragging'); e.dataTransfer.effectAllowed = 'move'; e.dataTransfer.setData('text/plain', i); }
+  function onDragOverFile(e, i) { e.preventDefault(); e.dataTransfer.dropEffect = 'move'; document.querySelectorAll('#files-a .file-item').forEach(el => el.classList.remove('drag-over-item')); if (dragFromIndex !== null && dragFromIndex !== i) e.currentTarget.classList.add('drag-over-item'); }
+  function onDragLeaveFile(e) { e.currentTarget.classList.remove('drag-over-item'); }
+  function onDropFile(e, to) { e.preventDefault(); e.currentTarget.classList.remove('drag-over-item'); if (dragFromIndex !== null && dragFromIndex !== to) moveFileA(dragFromIndex, to); dragFromIndex = null; }
+  function onDragEndFile(e) { e.currentTarget.classList.remove('dragging'); document.querySelectorAll('#files-a .file-item').forEach(el => el.classList.remove('drag-over-item')); dragFromIndex = null; }
+  function formatSize(b) { if (b < 1024) return b + ' B'; if (b < 1024*1024) return (b/1024).toFixed(0) + ' KB'; return (b/(1024*1024)).toFixed(1) + ' MB'; }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Result display
+  // ══════════════════════════════════════════════════════════════════
+
+  function showProcessing(msg) {
+    const area = document.getElementById('result-area'); area.classList.remove('hidden');
+    document.getElementById('status-processing').classList.remove('hidden');
+    document.getElementById('status-success').classList.add('hidden');
+    document.getElementById('status-error').classList.add('hidden');
+    if (msg) document.getElementById('processing-text').textContent = msg;
+  }
+  function showSuccess(blob, filename) {
+    document.getElementById('status-processing').classList.add('hidden');
+    document.getElementById('status-success').classList.remove('hidden');
+    const url = URL.createObjectURL(blob);
+    const link = document.getElementById('download-link');
+    link.href = url; link.download = filename;
+    document.getElementById('download-filename').textContent = filename;
+    document.getElementById('success-text').textContent = `${t('statusSuccess')} (${formatSize(blob.size)})`;
+  }
+  function showError(msg) {
+    document.getElementById('status-processing').classList.add('hidden');
+    document.getElementById('status-error').classList.remove('hidden');
+    document.getElementById('error-text').textContent = msg;
+    document.getElementById('result-area').classList.remove('hidden');
+  }
+  function hideResult() { document.getElementById('result-area').classList.add('hidden'); }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Theme
+  // ══════════════════════════════════════════════════════════════════
+
+  function toggleTheme() {
+    const isMono = document.body.classList.toggle('theme-mono');
+    localStorage.setItem('toc-theme', isMono ? 'mono' : 'emerald');
+    updateThemeIcon();
+  }
+  function updateThemeIcon() {
+    const m = document.body.classList.contains('theme-mono');
+    document.getElementById('theme-icon-emerald').classList.toggle('hidden', m);
+    document.getElementById('theme-icon-mono').classList.toggle('hidden', !m);
+  }
+  function applyStoredTheme() {
+    if (localStorage.getItem('toc-theme') !== 'emerald') document.body.classList.add('theme-mono');
+    updateThemeIcon();
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Helper functions ported from toc_engine.go
+  // ══════════════════════════════════════════════════════════════════
+
+  const colorRe = /^#[0-9A-Fa-f]{6}$/;
+
+  function validateColor(color) {
+    color = (color || '').trim();
+    if (!color.startsWith('#')) color = '#' + color;
+    return colorRe.test(color) ? color.toUpperCase() : '#1A2980';
+  }
+
+  function cleanTitle(filename) {
+    let name = filename.replace(/\.[^.]+$/, '');
+    name = name.replace(/_/g, ' ').replace(/-/g, ' \u2013 ');
+    name = name.replace(/^\d+[\s\-_.]+/, '');
+    return name.trim();
+  }
+
+  const MAX_ENTRY_TITLE_LEN = 80;
+  function truncateEntry(title) {
+    if ([...title].length <= MAX_ENTRY_TITLE_LEN) return title;
+    return [...title].slice(0, MAX_ENTRY_TITLE_LEN).join('') + '...';
+  }
+
+  const unsafeFilenameRe = /[<>:"/\\|?*]/g;
+  function titleToFilename(title) {
+    let name = title.replace(unsafeFilenameRe, '').trim();
+    return name ? name + '.pdf' : 'ausgabe.pdf';
+  }
+
+  const lowercaseWords = new Set(['und','oder','f\u00fcr','von','mit','im','am','an']);
+  function folderToTitle(folderName) {
+    let title = folderName.replace(/_/g, ' ').replace(/-/g, ' ').replace(/\s+/g, ' ').trim();
+    const words = title.split(/\s+/);
+    if (words.length === 0) return 'Inhaltsverzeichnis';
+    const result = words.map((w, i) => {
+      if (i === 0 || !lowercaseWords.has(w.toLowerCase())) return capitalize(w);
+      return w.toLowerCase();
+    });
+    title = result.join(' ');
+    title = title.replace(/\bAus und\b/g, 'Aus- und');
+    return title;
+  }
+
+  function capitalize(s) {
+    if (!s) return s;
+    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+  }
+
+  function hexToRgb(hex) {
+    hex = hex.replace('#', '');
+    const r = parseInt(hex.substring(0, 2), 16) / 255;
+    const g = parseInt(hex.substring(2, 4), 16) / 255;
+    const b = parseInt(hex.substring(4, 6), 16) / 255;
+    return PDFLib.rgb(r, g, b);
+  }
+
+  function lightenColor(hex, amount) {
+    hex = hex.replace('#', '');
+    let r = parseInt(hex.substring(0, 2), 16);
+    let g = parseInt(hex.substring(2, 4), 16);
+    let b = parseInt(hex.substring(4, 6), 16);
+    r = Math.min(255, Math.round(r + (255 - r) * amount));
+    g = Math.min(255, Math.round(g + (255 - g) * amount));
+    b = Math.min(255, Math.round(b + (255 - b) * amount));
+    return PDFLib.rgb(r / 255, g / 255, b / 255);
+  }
+
+  function coalesce(...vals) { for (const v of vals) if (v) return v; return ''; }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Font loading
+  // ══════════════════════════════════════════════════════════════════
+
+  const FONT_URLS = {
+    'IBM Plex Sans': {
+      regular: '/fonts/IBMPlexSans/IBMPlexSans-Regular.otf',
+      bold:    '/fonts/IBMPlexSans/IBMPlexSans-Bold.otf',
+    },
+    'Inter': {
+      regular: '/fonts/Inter/Inter-Regular.otf',
+      bold:    '/fonts/Inter/Inter-Bold.otf',
+    },
+    'Roboto': {
+      regular: '/fonts/Roboto/Roboto-Regular.ttf',
+      bold:    '/fonts/Roboto/Roboto-Bold.ttf',
+    },
+  };
+
+  const fontCache = new Map();
+
+  async function loadFontPair(fontName) {
+    if (fontCache.has(fontName)) return fontCache.get(fontName);
+    const urls = FONT_URLS[fontName];
+    if (!urls) return null;
+    try {
+      const [regularBuf, boldBuf] = await Promise.all([
+        fetch(urls.regular).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }),
+        fetch(urls.bold).then(r => { if (!r.ok) throw new Error(r.status); return r.arrayBuffer(); }),
+      ]);
+      const pair = { regular: regularBuf, bold: boldBuf };
+      fontCache.set(fontName, pair);
+      return pair;
+    } catch {
+      return null;
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Bookmark extraction from source PDFs
+  // ══════════════════════════════════════════════════════════════════
+
+  function extractOutline(pdfDoc) {
+    try {
+      const catalog = pdfDoc.catalog;
+      const outlinesRef = catalog.get(PDFLib.PDFName.of('Outlines'));
+      if (!outlinesRef) return [];
+      const outlines = pdfDoc.context.lookup(outlinesRef);
+      if (!outlines) return [];
+
+      const pages = pdfDoc.getPages();
+      const pageRefs = pages.map((_, i) => pdfDoc.getPage(i).ref);
+      const pageRefMap = new Map();
+      pageRefs.forEach((ref, i) => pageRefMap.set(ref.toString(), i));
+
+      function getPageIndex(dest) {
+        if (!dest) return 0;
+        let resolved = dest;
+        if (dest instanceof PDFLib.PDFRef) {
+          resolved = pdfDoc.context.lookup(dest);
+        }
+        if (resolved instanceof PDFLib.PDFArray) {
+          const pageRef = resolved.get(0);
+          if (pageRef instanceof PDFLib.PDFRef) {
+            const key = pageRef.toString();
+            if (pageRefMap.has(key)) return pageRefMap.get(key);
+          }
+        }
+        return 0;
+      }
+
+      function readItems(firstRef) {
+        const items = [];
+        let ref = firstRef;
+        const visited = new Set();
+        while (ref) {
+          const refKey = ref.toString();
+          if (visited.has(refKey)) break;
+          visited.add(refKey);
+          const item = pdfDoc.context.lookup(ref);
+          if (!item) break;
+
+          let title = '';
+          const titleObj = item.get(PDFLib.PDFName.of('Title'));
+          if (titleObj) {
+            const resolved = titleObj instanceof PDFLib.PDFRef ? pdfDoc.context.lookup(titleObj) : titleObj;
+            if (resolved && typeof resolved.decodeText === 'function') title = resolved.decodeText();
+            else if (resolved && typeof resolved.asString === 'function') title = resolved.asString();
+          }
+
+          let page = 0;
+          const dest = item.get(PDFLib.PDFName.of('Dest'));
+          if (dest) {
+            const resolvedDest = dest instanceof PDFLib.PDFRef ? pdfDoc.context.lookup(dest) : dest;
+            page = getPageIndex(resolvedDest);
+          } else {
+            const action = item.get(PDFLib.PDFName.of('A'));
+            if (action) {
+              const actionObj = action instanceof PDFLib.PDFRef ? pdfDoc.context.lookup(action) : action;
+              if (actionObj) {
+                const d = actionObj.get(PDFLib.PDFName.of('D'));
+                if (d) {
+                  const rd = d instanceof PDFLib.PDFRef ? pdfDoc.context.lookup(d) : d;
+                  page = getPageIndex(rd);
+                }
+              }
+            }
+          }
+
+          let children = [];
+          const firstChild = item.get(PDFLib.PDFName.of('First'));
+          if (firstChild) children = readItems(firstChild);
+
+          items.push({ title, page, children });
+
+          const next = item.get(PDFLib.PDFName.of('Next'));
+          ref = next instanceof PDFLib.PDFRef ? next : null;
+        }
+        return items;
+      }
+
+      const firstRef = outlines.get(PDFLib.PDFName.of('First'));
+      if (!firstRef) return [];
+      return readItems(firstRef);
+    } catch {
+      return [];
+    }
+  }
+
+  function distributeOutline(sourceOutline, entries) {
+    if (!sourceOutline || sourceOutline.length === 0) return;
+    function assign(items) {
+      for (const item of items) {
+        const bookmarkPage = item.page;
+        for (let i = 0; i < entries.length; i++) {
+          const start = entries[i].page - 1;
+          const end = (i + 1 < entries.length) ? entries[i + 1].page - 1 : Infinity;
+          if (bookmarkPage >= start && bookmarkPage < end) {
+            if (!entries[i].sourceOutline) entries[i].sourceOutline = [];
+            entries[i].sourceOutline.push({ title: item.title, page: bookmarkPage - start, children: [] });
+            break;
+          }
+        }
+        if (item.children && item.children.length > 0) assign(item.children);
+      }
+    }
+    assign(sourceOutline);
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // TOC layout constants (from toc_engine.go)
+  // ══════════════════════════════════════════════════════════════════
+
+  const PAGE_WIDTH = 595.28;
+  const PAGE_HEIGHT = 841.89;
+  const TOP_MARGIN = 56.69;
+  const BOTTOM_MARGIN = 56.69;
+  const LEFT_MARGIN = 70.87;
+  const RIGHT_MARGIN = 70.87;
+  const RIGHT_EDGE = PAGE_WIDTH - RIGHT_MARGIN;
+  const LINE_HEIGHT = 30.5;
+  const LINK_SHIFT_UP = 6.0;
+  const SECTION_LINE_HEIGHT = 2.83;
+
+  const TITLE_BLOCK_OFFSETS = {
+    'T_T_T': 126.3, 'T_T_F': 99.3, 'T_F_T': 82.3, 'T_F_F': 53.3,
+    'F_T_T': 105.3, 'F_T_F': 78.3, 'F_F_T': 64.3, 'F_F_F': 37.3,
+  };
+
+  function computeTitleBlock(hasTitle, hasSubtitle, showLines) {
+    const key = `${showLines?'T':'F'}_${hasTitle?'T':'F'}_${hasSubtitle?'T':'F'}`;
+    return TITLE_BLOCK_OFFSETS[key] || 37.3;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Iterative TOC page count convergence
+  // ══════════════════════════════════════════════════════════════════
+
+  function calculateLayout(entries, opts) {
+    const hasTitle = !!opts.title;
+    const hasSubtitle = !!opts.subtitle;
+    const titleBlock = computeTitleBlock(hasTitle, hasSubtitle, opts.showLines);
+    const usableHeight = PAGE_HEIGHT - TOP_MARGIN - BOTTOM_MARGIN;
+
+    // Entries per first page (with title block)
+    const entriesFirstPage = Math.floor((usableHeight - titleBlock) / LINE_HEIGHT);
+    // Entries per subsequent pages (no title block)
+    const titleBlockSubsequent = computeTitleBlock(false, false, false);
+    const entriesPerSubsequentPage = Math.floor((usableHeight - titleBlockSubsequent) / LINE_HEIGHT);
+
+    let tocPagesGuess = 1;
+
+    for (let iter = 0; iter < 5; iter++) {
+      // Compute display page numbers based on guess
+      if (opts.jsonMode) {
+        for (let i = 0; i < entries.length; i++) {
+          entries[i].displayPage = entries[i].page + tocPagesGuess;
+          entries[i].finalPage = entries[i].page + tocPagesGuess;
+        }
+      } else {
+        let currentPage = tocPagesGuess + 1;
+        for (let i = 0; i < entries.length; i++) {
+          entries[i].displayPage = currentPage;
+          entries[i].finalPage = currentPage;
+          currentPage += entries[i].pages;
+        }
+      }
+
+      // How many TOC pages do we actually need?
+      const n = entries.length;
+      let actualPages;
+      if (n <= entriesFirstPage) {
+        actualPages = 1;
+      } else {
+        const remaining = n - entriesFirstPage;
+        actualPages = 1 + Math.ceil(remaining / entriesPerSubsequentPage);
+      }
+
+      if (actualPages === tocPagesGuess) break;
+      tocPagesGuess = actualPages;
+    }
+
+    return {
+      tocPages: tocPagesGuess,
+      entriesFirstPage,
+      entriesPerSubsequentPage,
+      titleBlock,
+      titleBlockSubsequent,
+    };
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // TOC page drawing with pdf-lib
+  // ══════════════════════════════════════════════════════════════════
+
+  async function createTocDocument(entries, opts, layout) {
+    const { PDFDocument, StandardFonts, rgb } = PDFLib;
+    const tocDoc = await PDFDocument.create();
+    if (typeof fontkit !== 'undefined') tocDoc.registerFontkit(fontkit);
+
+    // Load fonts
+    let fontRegular, fontBold;
+    const fontPair = await loadFontPair(opts.font);
+    if (fontPair) {
+      fontRegular = await tocDoc.embedFont(fontPair.regular);
+      fontBold = await tocDoc.embedFont(fontPair.bold);
+    } else {
+      fontRegular = await tocDoc.embedFont(StandardFonts.Helvetica);
+      fontBold = await tocDoc.embedFont(StandardFonts.HelveticaBold);
+    }
+
+    const bgColor = validateColor(opts.bgColor);
+    const lineColor = validateColor(opts.lineColor);
+    const fontColor = validateColor(opts.fontColor);
+    const fontColorRgb = hexToRgb(fontColor);
+    const lineColorRgb = hexToRgb(lineColor);
+    const dotColor = rgb(140/255, 140/255, 140/255);
+
+    const subtitleColor = (fontColor !== '#000000')
+      ? lightenColor(fontColor, 0.3)
+      : rgb(80/255, 80/255, 80/255);
+
+    const { tocPages, entriesFirstPage, entriesPerSubsequentPage, titleBlock, titleBlockSubsequent } = layout;
+
+    let entryIndex = 0;
+
+    for (let pageNum = 0; pageNum < tocPages; pageNum++) {
+      const page = tocDoc.addPage([PAGE_WIDTH, PAGE_HEIGHT]);
+      const isFirstPage = pageNum === 0;
+      const isLastPage = pageNum === tocPages - 1;
+      const currentTitleBlock = isFirstPage ? titleBlock : titleBlockSubsequent;
+      const entriesThisPage = isFirstPage ? entriesFirstPage : entriesPerSubsequentPage;
+
+      // Background fill
+      if (bgColor !== '#FFFFFF') {
+        page.drawRectangle({
+          x: 0, y: 0, width: PAGE_WIDTH, height: PAGE_HEIGHT,
+          color: hexToRgb(bgColor),
+        });
+      }
+
+      let yPos = PAGE_HEIGHT - TOP_MARGIN;
+
+      // First page: top section line, title, subtitle
+      if (isFirstPage) {
+        // v(0.5cm) = ~14.17pt initial offset
+        yPos -= 14.17;
+
+        // Top section line
+        if (opts.showLines) {
+          page.drawRectangle({
+            x: LEFT_MARGIN, y: yPos - SECTION_LINE_HEIGHT,
+            width: RIGHT_EDGE - LEFT_MARGIN, height: SECTION_LINE_HEIGHT,
+            color: lineColorRgb,
+            borderWidth: 0,
+          });
+          yPos -= SECTION_LINE_HEIGHT;
+        }
+
+        // Title
+        if (opts.title) {
+          yPos -= 11.34; // v(0.4cm)
+          const titleFontSize = 15.4; // 1.4em of 11pt
+          page.drawText(opts.title, {
+            x: LEFT_MARGIN, y: yPos - titleFontSize,
+            size: titleFontSize, font: fontBold, color: fontColorRgb,
+            maxWidth: RIGHT_EDGE - LEFT_MARGIN,
+          });
+          yPos -= titleFontSize + 2;
+        }
+
+        // Subtitle
+        if (opts.subtitle) {
+          yPos -= 4.25; // v(0.15cm)
+          const subtitleFontSize = 12.1; // 1.1em of 11pt
+          page.drawText(opts.subtitle, {
+            x: LEFT_MARGIN, y: yPos - subtitleFontSize,
+            size: subtitleFontSize, font: fontRegular, color: subtitleColor,
+            maxWidth: RIGHT_EDGE - LEFT_MARGIN,
+          });
+          yPos -= subtitleFontSize + 2;
+        }
+
+        // v(0.8cm) = ~22.68pt spacing before entries
+        yPos -= 22.68;
+      } else {
+        // Subsequent pages: small top spacing
+        yPos -= 14.17;
+      }
+
+      // Draw entries
+      const entryFontSize = 9;
+      const startY = PAGE_HEIGHT - TOP_MARGIN - currentTitleBlock;
+
+      for (let e = 0; e < entriesThisPage && entryIndex < entries.length; e++, entryIndex++) {
+        const entry = entries[entryIndex];
+        const displayTitle = truncateEntry(entry.title);
+        const displayPage = String(entry.displayPage);
+
+        const entryY = startY - e * LINE_HEIGHT;
+
+        // Draw title text
+        page.drawText(displayTitle, {
+          x: LEFT_MARGIN, y: entryY,
+          size: entryFontSize, font: fontRegular, color: fontColorRgb,
+        });
+
+        // Draw page number (right-aligned)
+        const pageNumWidth = fontRegular.widthOfTextAtSize(displayPage, entryFontSize);
+        page.drawText(displayPage, {
+          x: RIGHT_EDGE - pageNumWidth, y: entryY,
+          size: entryFontSize, font: fontRegular, color: fontColorRgb,
+        });
+
+        // Draw dot leaders
+        if (opts.dotLeaders) {
+          const titleWidth = fontRegular.widthOfTextAtSize(displayTitle, entryFontSize);
+          const dotsStart = LEFT_MARGIN + titleWidth + 4;
+          const dotsEnd = RIGHT_EDGE - pageNumWidth - 4;
+          if (dotsEnd > dotsStart + 10) {
+            const dotStr = ' .';
+            const dotWidth = fontRegular.widthOfTextAtSize(dotStr, entryFontSize);
+            let dots = '';
+            let w = 0;
+            while (w + dotWidth < dotsEnd - dotsStart) {
+              dots += dotStr;
+              w += dotWidth;
+            }
+            if (dots) {
+              page.drawText(dots, {
+                x: dotsStart, y: entryY,
+                size: entryFontSize, font: fontRegular, color: dotColor,
+              });
+            }
+          }
+        }
+      }
+
+      // Bottom section line on last page
+      if (isLastPage && opts.showLines) {
+        // v(0.8cm) after entries, then line
+        const bottomY = TOP_MARGIN + SECTION_LINE_HEIGHT + 5;
+        page.drawRectangle({
+          x: LEFT_MARGIN, y: bottomY - SECTION_LINE_HEIGHT,
+          width: RIGHT_EDGE - LEFT_MARGIN, height: SECTION_LINE_HEIGHT,
+          color: lineColorRgb,
+          borderWidth: 0,
+        });
+      }
+    }
+
+    return { tocDoc, fontRegular, fontBold };
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Link annotations on TOC pages
+  // ══════════════════════════════════════════════════════════════════
+
+  function addTocLinks(tocDoc, entries, layout, totalTocPages) {
+    const { titleBlock, titleBlockSubsequent, entriesFirstPage, entriesPerSubsequentPage } = layout;
+    const pages = tocDoc.getPages();
+
+    for (let i = 0; i < entries.length; i++) {
+      const isFirstPage = Math.floor(i < entriesFirstPage ? 0 : 1 + Math.floor((i - entriesFirstPage) / entriesPerSubsequentPage));
+      let tocPageIdx, entryOnPage;
+
+      if (i < entriesFirstPage) {
+        tocPageIdx = 0;
+        entryOnPage = i;
+      } else {
+        const rem = i - entriesFirstPage;
+        tocPageIdx = 1 + Math.floor(rem / entriesPerSubsequentPage);
+        entryOnPage = rem % entriesPerSubsequentPage;
+      }
+
+      if (tocPageIdx >= totalTocPages) continue;
+
+      const currentTitleBlock = tocPageIdx === 0 ? titleBlock : titleBlockSubsequent;
+      const yTop = PAGE_HEIGHT - TOP_MARGIN - currentTitleBlock - entryOnPage * LINE_HEIGHT + LINK_SHIFT_UP;
+      const yBottom = yTop - LINE_HEIGHT + 6;
+
+      const targetPageIndex = entries[i].finalPage - 1; // 0-based
+      if (targetPageIndex < 0 || targetPageIndex >= pages.length) continue;
+      const targetPageRef = pages[targetPageIndex].ref;
+
+      const tocPage = pages[tocPageIdx];
+      const context = tocDoc.context;
+
+      const annot = context.obj({
+        Type: 'Annot',
+        Subtype: 'Link',
+        Rect: [LEFT_MARGIN, yBottom, RIGHT_EDGE, yTop],
+        Border: [0, 0, 0],
+        Dest: [targetPageRef, 'Fit'],
+      });
+      const annotRef = context.register(annot);
+
+      const pageDict = tocPage.node;
+      let annots = pageDict.get(PDFLib.PDFName.of('Annots'));
+      if (annots) {
+        if (annots instanceof PDFLib.PDFRef) annots = context.lookup(annots);
+        annots.push(annotRef);
+      } else {
+        pageDict.set(PDFLib.PDFName.of('Annots'), context.obj([annotRef]));
+      }
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Bookmark / outline creation
+  // ══════════════════════════════════════════════════════════════════
+
+  function addBookmarks(pdfDoc, entries, tocTitle) {
+    const context = pdfDoc.context;
+    const pages = pdfDoc.getPages();
+    if (pages.length === 0) return;
+
+    const catalog = pdfDoc.catalog;
+
+    // Build child outline items for TOC entries
+    const childRefs = [];
+    const childDicts = [];
+
+    for (let i = 0; i < entries.length; i++) {
+      const entry = entries[i];
+      const pageIdx = Math.min(entry.finalPage - 1, pages.length - 1);
+      if (pageIdx < 0) continue;
+
+      const ref = context.nextRef();
+      childRefs.push(ref);
+
+      // Build sub-children from source outline
+      let subChildRefs = [];
+      let subChildDicts = [];
+      if (entry.sourceOutline && entry.sourceOutline.length > 0) {
+        for (let j = 0; j < entry.sourceOutline.length; j++) {
+          const sub = entry.sourceOutline[j];
+          const subPageIdx = Math.min(pageIdx + sub.page, pages.length - 1);
+          const subRef = context.nextRef();
+          subChildRefs.push(subRef);
+          subChildDicts.push({ ref: subRef, title: sub.title, pageIdx: subPageIdx });
+        }
+      }
+
+      childDicts.push({
+        ref, title: entry.title, pageIdx, subChildRefs, subChildDicts
+      });
+    }
+
+    // Create Outlines dict
+    const outlinesRef = context.nextRef();
+    const topRef = context.nextRef();
+
+    // Assign top-level item
+    const topDict = {
+      Type: 'Outlines',
+      First: topRef,
+      Last: topRef,
+      Count: 1 + childRefs.length,
+    };
+    context.assign(outlinesRef, context.obj(topDict));
+
+    // Build top bookmark (TOC title → page 1)
+    const topItemDict = {
+      Title: PDFLib.PDFHexString.fromText(tocTitle),
+      Parent: outlinesRef,
+      Dest: [pages[0].ref, 'Fit'],
+    };
+
+    if (childRefs.length > 0) {
+      topItemDict.First = childRefs[0];
+      topItemDict.Last = childRefs[childRefs.length - 1];
+      topItemDict.Count = childRefs.length;
+    }
+
+    context.assign(topRef, context.obj(topItemDict));
+
+    // Build entry bookmarks linked list
+    for (let i = 0; i < childDicts.length; i++) {
+      const cd = childDicts[i];
+      const d = {
+        Title: PDFLib.PDFHexString.fromText(cd.title),
+        Parent: topRef,
+        Dest: [pages[cd.pageIdx].ref, 'Fit'],
+      };
+      if (i > 0) d.Prev = childRefs[i - 1];
+      if (i < childDicts.length - 1) d.Next = childRefs[i + 1];
+
+      // Sub-children
+      if (cd.subChildRefs.length > 0) {
+        d.First = cd.subChildRefs[0];
+        d.Last = cd.subChildRefs[cd.subChildRefs.length - 1];
+        d.Count = cd.subChildRefs.length;
+
+        for (let j = 0; j < cd.subChildDicts.length; j++) {
+          const sc = cd.subChildDicts[j];
+          const sd = {
+            Title: PDFLib.PDFHexString.fromText(sc.title),
+            Parent: cd.ref,
+            Dest: [pages[Math.max(0, sc.pageIdx)].ref, 'Fit'],
+          };
+          if (j > 0) sd.Prev = cd.subChildRefs[j - 1];
+          if (j < cd.subChildDicts.length - 1) sd.Next = cd.subChildRefs[j + 1];
+          context.assign(cd.subChildRefs[j], context.obj(sd));
+        }
+      }
+
+      context.assign(cd.ref, context.obj(d));
+    }
+
+    catalog.set(PDFLib.PDFName.of('Outlines'), outlinesRef);
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // JSON entry parsing (Mode B) — port of loadJSONEntries
+  // ══════════════════════════════════════════════════════════════════
+
+  function loadJSONEntries(jsonData, totalPages) {
+    if (!Array.isArray(jsonData) || jsonData.length === 0) {
+      throw new Error(currentLang === 'de' ? 'JSON muss eine nicht-leere Liste sein.' : 'JSON must be a non-empty array.');
+    }
+
+    const entries = [];
+    for (let i = 0; i < jsonData.length; i++) {
+      const item = jsonData[i];
+      if (typeof item !== 'object' || item === null) {
+        throw new Error(currentLang === 'de' ? `Eintrag ${i+1} ist ung\u00fcltig.` : `Entry ${i+1} is invalid.`);
+      }
+      if (!('title' in item) || !('page' in item)) {
+        throw new Error(currentLang === 'de' ? `Eintrag ${i+1} braucht die Felder 'title' und 'page'.` : `Entry ${i+1} requires 'title' and 'page' fields.`);
+      }
+      if (typeof item.title !== 'string') {
+        throw new Error(currentLang === 'de' ? `Eintrag ${i+1}: 'title' muss ein String sein.` : `Entry ${i+1}: 'title' must be a string.`);
+      }
+      const page = Number(item.page);
+      if (!Number.isInteger(page)) {
+        throw new Error(currentLang === 'de' ? `Eintrag ${i+1}: 'page' muss eine Ganzzahl sein.` : `Entry ${i+1}: 'page' must be an integer.`);
+      }
+      if (page < 1 || page > totalPages) {
+        throw new Error(currentLang === 'de'
+          ? `Eintrag ${i+1}: Seite ${page} liegt au\u00dferhalb des PDFs (1\u2013${totalPages}).`
+          : `Entry ${i+1}: Page ${page} is out of range (1\u2013${totalPages}).`);
+      }
+
+      let pages;
+      if ('pages' in item && item.pages !== undefined) {
+        pages = Number(item.pages);
+        if (!Number.isInteger(pages)) {
+          throw new Error(currentLang === 'de' ? `Eintrag ${i+1}: 'pages' muss eine Ganzzahl sein.` : `Entry ${i+1}: 'pages' must be an integer.`);
+        }
+      } else if (i + 1 < jsonData.length) {
+        pages = Number(jsonData[i + 1].page) - page;
+      } else {
+        pages = totalPages - page + 1;
+      }
+
+      entries.push({ title: item.title, page, pages, finalPage: 0, displayPage: 0, sourceOutline: [] });
+    }
+    return entries;
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Read file as ArrayBuffer
+  // ══════════════════════════════════════════════════════════════════
+
+  function readFileAsArrayBuffer(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsArrayBuffer(file);
+    });
+  }
+
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(reader.error);
+      reader.readAsText(file);
+    });
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Generate Mode A (folder mode)
+  // ══════════════════════════════════════════════════════════════════
+
+  async function generateA() {
+    if (selectedFilesA.length === 0) return;
+
+    const btn = document.getElementById('btn-generate-a');
+    const isMergeOnly = document.getElementById('merge-only-a').checked;
+    btn.disabled = true;
+    btn.textContent = t('btnGenerating');
+    showProcessing(t('statusProcessing'));
+
+    try {
+      // Check total size
+      const totalSize = selectedFilesA.reduce((sum, f) => sum + f.size, 0);
+      if (totalSize > 200 * 1024 * 1024) {
+        showProcessing(t('warnLargeFiles'));
+      }
+
+      const title = document.getElementById('title-a').value.trim();
+      const subtitle = document.getElementById('subtitle-a').value.trim();
+      const font = document.getElementById('font-a').value;
+      const dotLeaders = document.getElementById('dots-a').checked;
+      const showLines = document.getElementById('lines-a').checked;
+      const lineColor = showLines ? getSelectedColor('a') : '#1A2980';
+      const bgColor = getSelectedBgColor('a');
+      const fontColor = getSelectedFontColor('a');
+
+      // Read all PDFs
+      showProcessing(currentLang === 'de' ? 'PDFs werden geladen...' : 'Loading PDFs...');
+      const pdfBuffers = [];
+      const pdfDocs = [];
+      const entries = [];
+
+      for (let i = 0; i < selectedFilesA.length; i++) {
+        const file = selectedFilesA[i];
+        const buf = await readFileAsArrayBuffer(file);
+        pdfBuffers.push(buf);
+
+        let doc;
+        try {
+          doc = await PDFLib.PDFDocument.load(buf, { ignoreEncryption: true });
+        } catch (e) {
+          throw new Error(`${t('errorCorruptPdf')}: ${file.name}`);
+        }
+        pdfDocs.push(doc);
+
+        const pageCount = doc.getPageCount();
+        const outline = extractOutline(doc);
+
+        entries.push({
+          title: cleanTitle(file.name),
+          pages: pageCount,
+          page: 0,
+          finalPage: 0,
+          displayPage: 0,
+          pdfBytes: buf,
+          sourceOutline: outline,
+        });
+      }
+
+      // Determine output filename
+      const defaultLabel = t('defaultTocLabel');
+      const outputFilename = title ? titleToFilename(title) : defaultLabel + '.pdf';
+
+      if (isMergeOnly) {
+        // Merge-only: no TOC page
+        showProcessing(currentLang === 'de' ? 'PDFs werden zusammengef\u00fchrt...' : 'Merging PDFs...');
+
+        const mergedDoc = await PDFLib.PDFDocument.create();
+        if (typeof fontkit !== 'undefined') mergedDoc.registerFontkit(fontkit);
+        let currentPage = 1;
+        for (let i = 0; i < entries.length; i++) {
+          entries[i].finalPage = currentPage;
+          entries[i].displayPage = currentPage;
+          const srcDoc = await PDFLib.PDFDocument.load(entries[i].pdfBytes, { ignoreEncryption: true });
+          const copied = await mergedDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+          copied.forEach(p => mergedDoc.addPage(p));
+          currentPage += entries[i].pages;
+        }
+
+        const bookmarkTitle = coalesce(title, subtitle, defaultLabel);
+        addBookmarks(mergedDoc, entries, bookmarkTitle);
+
+        const pdfBytes = await mergedDoc.save();
+        showSuccess(new Blob([pdfBytes], { type: 'application/pdf' }), outputFilename);
+        return;
+      }
+
+      // Full TOC mode
+      showProcessing(t('fontLoading'));
+      await loadFontPair(font); // preload into cache
+
+      const opts = { title, subtitle, font, dotLeaders, showLines, lineColor, bgColor, fontColor, jsonMode: false };
+
+      showProcessing(currentLang === 'de' ? 'Layout wird berechnet...' : 'Calculating layout...');
+      const layout = calculateLayout(entries, opts);
+
+      showProcessing(currentLang === 'de' ? 'Inhaltsverzeichnis wird erstellt...' : 'Creating table of contents...');
+      const { tocDoc } = await createTocDocument(entries, opts, layout);
+
+      // Merge content PDFs into tocDoc
+      showProcessing(currentLang === 'de' ? 'PDFs werden zusammengef\u00fchrt...' : 'Merging PDFs...');
+      for (const entry of entries) {
+        const srcDoc = await PDFLib.PDFDocument.load(entry.pdfBytes, { ignoreEncryption: true });
+        const copied = await tocDoc.copyPages(srcDoc, srcDoc.getPageIndices());
+        copied.forEach(p => tocDoc.addPage(p));
+      }
+
+      // Add link annotations
+      addTocLinks(tocDoc, entries, layout, layout.tocPages);
+
+      // Add bookmarks
+      const bookmarkTitle = coalesce(title, subtitle, defaultLabel);
+      addBookmarks(tocDoc, entries, bookmarkTitle);
+
+      const pdfBytes = await tocDoc.save();
+      showSuccess(new Blob([pdfBytes], { type: 'application/pdf' }), outputFilename);
+
+    } catch (err) {
+      showError(err.message || t('errorUnknown'));
+    } finally {
+      btn.disabled = selectedFilesA.length === 0;
+      btn.textContent = isMergeOnly ? t('btnMergeOnly') : t('btnGenerate');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Generate Mode B (JSON mode)
+  // ══════════════════════════════════════════════════════════════════
+
+  async function generateB() {
+    const pdfInput = document.getElementById('fileinput-pdf');
+    const jsonInput = document.getElementById('fileinput-json');
+
+    if (!pdfInput.files[0] || !jsonInput.files[0]) {
+      showError(t('errorSelectBoth'));
+      return;
+    }
+
+    const btn = document.getElementById('btn-generate-b');
+    btn.disabled = true;
+    btn.textContent = t('btnGenerating');
+    showProcessing(t('statusProcessing'));
+
+    try {
+      const title = document.getElementById('title-b').value.trim();
+      const subtitle = document.getElementById('subtitle-b').value.trim();
+      const font = document.getElementById('font-b').value;
+      const dotLeaders = document.getElementById('dots-b').checked;
+      const showLines = document.getElementById('lines-b').checked;
+      const lineColor = showLines ? getSelectedColor('b') : '#1A2980';
+      const bgColor = getSelectedBgColor('b');
+      const fontColor = getSelectedFontColor('b');
+
+      // Read files
+      showProcessing(currentLang === 'de' ? 'Dateien werden geladen...' : 'Loading files...');
+      const [pdfBuf, jsonText] = await Promise.all([
+        readFileAsArrayBuffer(pdfInput.files[0]),
+        readFileAsText(jsonInput.files[0]),
+      ]);
+
+      // Parse JSON
+      let jsonData;
+      try {
+        jsonData = JSON.parse(jsonText);
+      } catch (e) {
+        throw new Error(`${t('errorInvalidJson')}: ${e.message}`);
+      }
+
+      // Load source PDF
+      let srcDoc;
+      try {
+        srcDoc = await PDFLib.PDFDocument.load(pdfBuf, { ignoreEncryption: true });
+      } catch (e) {
+        throw new Error(`${t('errorCorruptPdf')}: ${pdfInput.files[0].name}`);
+      }
+      const totalPages = srcDoc.getPageCount();
+
+      // Parse entries
+      const entries = loadJSONEntries(jsonData, totalPages);
+
+      // Extract and distribute source bookmarks
+      const sourceOutline = extractOutline(srcDoc);
+      distributeOutline(sourceOutline, entries);
+
+      // Output filename
+      let outputFilename;
+      if (title) {
+        outputFilename = titleToFilename(title);
+      } else {
+        const pdfName = pdfInput.files[0].name.replace(/\.[^.]+$/, '');
+        outputFilename = titleToFilename(folderToTitle(pdfName));
+      }
+
+      // Load fonts
+      showProcessing(t('fontLoading'));
+      await loadFontPair(font);
+
+      const opts = { title, subtitle, font, dotLeaders, showLines, lineColor, bgColor, fontColor, jsonMode: true };
+
+      showProcessing(currentLang === 'de' ? 'Layout wird berechnet...' : 'Calculating layout...');
+      const layout = calculateLayout(entries, opts);
+
+      showProcessing(currentLang === 'de' ? 'Inhaltsverzeichnis wird erstellt...' : 'Creating table of contents...');
+      const { tocDoc } = await createTocDocument(entries, opts, layout);
+
+      // Merge source PDF after TOC
+      showProcessing(currentLang === 'de' ? 'PDFs werden zusammengef\u00fchrt...' : 'Merging PDFs...');
+      const srcDocForCopy = await PDFLib.PDFDocument.load(pdfBuf, { ignoreEncryption: true });
+      const copied = await tocDoc.copyPages(srcDocForCopy, srcDocForCopy.getPageIndices());
+      copied.forEach(p => tocDoc.addPage(p));
+
+      // Add link annotations
+      addTocLinks(tocDoc, entries, layout, layout.tocPages);
+
+      // Add bookmarks
+      const bookmarkTitle = coalesce(title, subtitle, t('defaultTocLabel'));
+      addBookmarks(tocDoc, entries, bookmarkTitle);
+
+      const pdfBytes = await tocDoc.save();
+      showSuccess(new Blob([pdfBytes], { type: 'application/pdf' }), outputFilename);
+
+    } catch (err) {
+      showError(err.message || t('errorUnknown'));
+    } finally {
+      btn.disabled = false;
+      btn.textContent = t('btnGenerate');
+    }
+  }
+
+  // ══════════════════════════════════════════════════════════════════
+  // Init
+  // ══════════════════════════════════════════════════════════════════
+
+  applyStoredTheme();
+  applyTranslations();
+  updateLangButtons();
+  initColorDropdown('a');  initColorDropdown('b');
+  initBgColorDropdown('a'); initBgColorDropdown('b');
+  initFontColorDropdown('a'); initFontColorDropdown('b');
+  </script>
+</body>
+</html>

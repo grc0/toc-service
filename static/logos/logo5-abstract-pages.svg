@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Concept 5: Abstract overlapping pages forming a "T" shape -->
+  <defs>
+    <linearGradient id="g5a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A2980"/>
+      <stop offset="100%" style="stop-color:#2563EB"/>
+    </linearGradient>
+    <linearGradient id="g5b" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#2563EB"/>
+      <stop offset="100%" style="stop-color:#26D0CE"/>
+    </linearGradient>
+    <linearGradient id="g5c" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#26D0CE"/>
+      <stop offset="100%" style="stop-color:#059669"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Left page (angled) -->
+  <g transform="rotate(-12, 70, 100)">
+    <rect x="30" y="35" width="80" height="110" rx="6" fill="url(#g5a)" opacity="0.85"/>
+    <rect x="42" y="55" width="35" height="4" rx="2" fill="white" opacity="0.6"/>
+    <rect x="42" y="65" width="28" height="4" rx="2" fill="white" opacity="0.4"/>
+    <rect x="42" y="75" width="40" height="4" rx="2" fill="white" opacity="0.3"/>
+    <rect x="42" y="85" width="32" height="4" rx="2" fill="white" opacity="0.2"/>
+  </g>
+
+  <!-- Center page (straight) -->
+  <rect x="60" y="30" width="80" height="110" rx="6" fill="url(#g5b)" opacity="0.9"/>
+  <rect x="72" y="50" width="35" height="4" rx="2" fill="white" opacity="0.7"/>
+  <rect x="72" y="60" width="42" height="4" rx="2" fill="white" opacity="0.5"/>
+  <rect x="72" y="70" width="30" height="4" rx="2" fill="white" opacity="0.4"/>
+  <rect x="72" y="80" width="48" height="4" rx="2" fill="white" opacity="0.3"/>
+  <rect x="72" y="90" width="36" height="4" rx="2" fill="white" opacity="0.2"/>
+
+  <!-- Right page (angled) -->
+  <g transform="rotate(12, 130, 100)">
+    <rect x="90" y="35" width="80" height="110" rx="6" fill="url(#g5c)" opacity="0.85"/>
+    <rect x="102" y="55" width="30" height="4" rx="2" fill="white" opacity="0.6"/>
+    <rect x="102" y="65" width="44" height="4" rx="2" fill="white" opacity="0.4"/>
+    <rect x="102" y="75" width="36" height="4" rx="2" fill="white" opacity="0.3"/>
+  </g>
+
+  <!-- TOC SERVICE text -->
+  <text x="100" y="172" font-family="sans-serif" font-size="20" fill="#1A2980" text-anchor="middle" font-weight="800" letter-spacing="3">TOC</text>
+  <text x="100" y="188" font-family="sans-serif" font-size="9" fill="#26D0CE" text-anchor="middle" letter-spacing="4" font-weight="600">SERVICE</text>
+</svg>

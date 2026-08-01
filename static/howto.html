@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How to Use – TOC Service</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logos/logo3a.svg">
+  <script src="/static/tailwindcss.js"></script>
+  <script>
+    tailwind.config = {
+      safelist: [
+        'bg-accent-600', 'text-accent-600',
+        'text-base-400', 'text-base-500', 'hover:text-base-600',
+      ],
+      theme: {
+        extend: {
+          colors: {
+            accent: {
+              50:  'var(--c-accent-50)',
+              100: 'var(--c-accent-100)',
+              500: 'var(--c-accent-500)',
+              600: 'var(--c-accent-600)',
+              700: 'var(--c-accent-700)',
+              800: 'var(--c-accent-800)',
+            },
+            base: {
+              50:  'var(--c-base-50)',
+              100: 'var(--c-base-100)',
+              200: 'var(--c-base-200)',
+              300: 'var(--c-base-300)',
+              400: 'var(--c-base-400)',
+              500: 'var(--c-base-500)',
+              600: 'var(--c-base-600)',
+              700: 'var(--c-base-700)',
+              800: 'var(--c-base-800)',
+              900: 'var(--c-base-900)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --c-accent-50:  #ecfdf5; --c-accent-100: #d1fae5;
+      --c-accent-500: #10b981; --c-accent-600: #059669;
+      --c-accent-700: #047857; --c-accent-800: #065f46;
+      --c-base-50:  #fafafa; --c-base-100: #f4f4f5;
+      --c-base-200: #e4e4e7; --c-base-300: #d4d4d8;
+      --c-base-400: #a1a1aa; --c-base-500: #71717a;
+      --c-base-600: #52525b; --c-base-700: #3f3f46;
+      --c-base-800: #27272a; --c-base-900: #18181b;
+    }
+    .theme-mono {
+      --c-accent-50:  #fafafa; --c-accent-100: #f4f4f5;
+      --c-accent-500: #71717a; --c-accent-600: #18181b;
+      --c-accent-700: #27272a; --c-accent-800: #18181b;
+      --c-base-50:  #ffffff; --c-base-100: #fafafa;
+      --c-base-200: #e5e7eb; --c-base-300: #d1d5db;
+      --c-base-400: #9ca3af; --c-base-500: #6b7280;
+      --c-base-600: #4b5563; --c-base-700: #374151;
+      --c-base-800: #1f2937; --c-base-900: #111827;
+    }
+    html { overflow-y: scroll; }
+  </style>
+</head>
+<body class="bg-base-50 min-h-screen">
+  <div class="max-w-2xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-start">
+      <div class="flex items-center gap-3">
+        <img src="/static/logos/logo3a.svg" alt="TOC Service" class="h-10 w-10">
+        <div>
+          <h1 class="text-2xl font-bold text-base-900" id="page-title">How to Use</h1>
+          <p class="text-base-500 mt-1" id="page-subtitle">Guide to features and options</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3 mt-1">
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" id="theme-toggle"
+          class="p-1.5 rounded-md text-base-400 hover:text-base-600 hover:bg-base-100 transition-colors"
+          title="Toggle theme">
+          <svg id="theme-icon-emerald" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"/>
+          </svg>
+          <svg id="theme-icon-mono" class="h-4 w-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z"/>
+          </svg>
+        </button>
+        <!-- Language Switcher -->
+        <div class="flex items-center gap-1">
+          <button onclick="setLang('en')" id="lang-en"
+            class="px-2 py-1 text-xs font-medium rounded transition-colors">EN</button>
+          <span class="text-base-300">|</span>
+          <button onclick="setLang('de')" id="lang-de"
+            class="px-2 py-1 text-xs font-medium rounded transition-colors">DE</button>
+        </div>
+        <a href="/" class="text-sm text-accent-600 hover:text-accent-800 transition-colors">&larr; <span id="back-link-text">Back</span></a>
+      </div>
+    </div>
+
+    <!-- Content -->
+    <div class="space-y-8">
+
+      <!-- Overview -->
+      <section>
+        <h2 class="text-lg font-semibold text-base-900 mb-2" id="s-overview-title">Overview</h2>
+        <p class="text-sm text-base-600 leading-relaxed" id="s-overview-text">
+          The TOC Service generates clickable PDF tables of contents. Upload your PDF files and receive a single merged document with a professional table of contents page prepended. The TOC entries link directly to the corresponding pages in the final PDF.
+        </p>
+      </section>
+
+      <!-- Mode A -->
+      <section>
+        <h2 class="text-lg font-semibold text-base-900 mb-2" id="s-modea-title">Mode A: Upload Multiple PDFs</h2>
+        <p class="text-sm text-base-600 leading-relaxed mb-3" id="s-modea-text">
+          Upload multiple PDF files at once. The service merges them into a single PDF and prepends a table of contents page. Each uploaded file becomes one TOC entry, using the filename (without .pdf) as the entry title.
+        </p>
+        <div class="bg-white border border-base-200 rounded-lg p-4">
+          <h3 class="text-sm font-medium text-base-700 mb-2" id="s-modea-opts-title">Options</h3>
+          <ul class="text-sm text-base-600 space-y-1.5 list-disc list-inside">
+            <li id="s-modea-opt-title"><strong id="s-modea-opt-title-b">Title</strong> &mdash; displayed at the top of the TOC page (optional)</li>
+            <li id="s-modea-opt-subtitle"><strong id="s-modea-opt-subtitle-b">Subtitle</strong> &mdash; displayed below the title (optional)</li>
+            <li id="s-modea-opt-font"><strong id="s-modea-opt-font-b">Font</strong> &mdash; choose between IBM Plex Sans, Inter, or Roboto</li>
+            <li id="s-modea-opt-color"><strong id="s-modea-opt-color-b">Line color</strong> &mdash; color of the decorative bars; pick a preset or enter a custom hex code</li>
+            <li id="s-modea-opt-bgcolor"><strong id="s-modea-opt-bgcolor-b">Background color</strong> &mdash; background color of the TOC page; pick a preset or enter a custom hex code</li>
+            <li id="s-modea-opt-fontcolor"><strong id="s-modea-opt-fontcolor-b">Font color</strong> &mdash; text color on the TOC page; pick a preset or enter a custom hex code</li>
+            <li id="s-modea-opt-dots"><strong id="s-modea-opt-dots-b">Dot leaders</strong> &mdash; dotted line between entry name and page number</li>
+            <li id="s-modea-opt-lines"><strong id="s-modea-opt-lines-b">Section lines</strong> &mdash; decorative bars above and below the TOC</li>
+            <li id="s-modea-opt-merge"><strong id="s-modea-opt-merge-b">Merge only</strong> &mdash; merge PDFs without adding a visible TOC page</li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Mode B -->
+      <section>
+        <h2 class="text-lg font-semibold text-base-900 mb-2" id="s-modeb-title">Mode B: Existing PDF + JSON</h2>
+        <p class="text-sm text-base-600 leading-relaxed mb-3" id="s-modeb-text">
+          Upload a single PDF together with a JSON file that defines the TOC entries. The service generates a TOC page and prepends it to the existing PDF. This mode is useful when you already have a merged document and want to add a table of contents.
+        </p>
+        <div class="bg-white border border-base-200 rounded-lg p-4">
+          <h3 class="text-sm font-medium text-base-700 mb-2" id="s-modeb-opts-title">Options</h3>
+          <p class="text-sm text-base-600 mb-2" id="s-modeb-opts-text">Same options as Mode A (title, subtitle, font, line color, background color, dot leaders, section lines) except merge-only.</p>
+        </div>
+      </section>
+
+      <!-- JSON Format -->
+      <section>
+        <h2 class="text-lg font-semibold text-base-900 mb-2" id="s-json-title">JSON Format</h2>
+        <p class="text-sm text-base-600 leading-relaxed mb-3" id="s-json-text">
+          The JSON file must contain an array of objects. Each object represents one TOC entry.
+        </p>
+        <div class="bg-base-100 border border-base-200 rounded-lg p-4 overflow-x-auto">
+          <pre class="text-xs text-base-700 leading-relaxed"><code>[
+  {
+    "title": "Chapter 1 &mdash; Introduction",
+    "page": 1,
+    "pages": 5
+  },
+  {
+    "title": "Chapter 2 &mdash; Methods",
+    "page": 6,
+    "pages": 12
+  },
+  {
+    "title": "Appendix",
+    "page": 18
+  }
+]</code></pre>
+        </div>
+        <div class="mt-3 bg-white border border-base-200 rounded-lg p-4">
+          <h3 class="text-sm font-medium text-base-700 mb-2" id="s-json-fields-title">Fields</h3>
+          <ul class="text-sm text-base-600 space-y-1.5 list-disc list-inside">
+            <li id="s-json-field-title"><strong>title</strong> <span class="text-base-400">(string, required)</span> &mdash; <span id="s-json-field-title-desc">display name of the TOC entry</span></li>
+            <li id="s-json-field-page"><strong>page</strong> <span class="text-base-400">(integer, required)</span> &mdash; <span id="s-json-field-page-desc">page number in the original PDF where this entry starts</span></li>
+            <li id="s-json-field-pages"><strong>pages</strong> <span class="text-base-400">(integer, optional)</span> &mdash; <span id="s-json-field-pages-desc">number of pages for this entry (displayed as page range in the TOC)</span></li>
+          </ul>
+        </div>
+      </section>
+
+      <!-- Options Reference -->
+      <section>
+        <h2 class="text-lg font-semibold text-base-900 mb-2" id="s-opts-title">Options Reference</h2>
+        <div class="bg-white border border-base-200 rounded-lg divide-y divide-base-200">
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-base-700" id="s-opts-font-title">Font</h3>
+            <p class="text-sm text-base-500 mt-1" id="s-opts-font-text">IBM Plex Sans (default), Inter, or Roboto. Applied to the entire TOC page.</p>
+          </div>
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-base-700" id="s-opts-color-title">Line Color</h3>
+            <p class="text-sm text-base-500 mt-1" id="s-opts-color-text">Color of the decorative bars above and below the TOC. Choose from preset colors or enter a custom hex code (e.g. #FF5733).</p>
+          </div>
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-base-700" id="s-opts-bgcolor-title">Background Color</h3>
+            <p class="text-sm text-base-500 mt-1" id="s-opts-bgcolor-text">Background color of the TOC page. White by default. Choose from preset colors or enter a custom hex code.</p>
+          </div>
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-base-700" id="s-opts-fontcolor-title">Font Color</h3>
+            <p class="text-sm text-base-500 mt-1" id="s-opts-fontcolor-text">Text color on the TOC page. Black by default. Choose from preset colors or enter a custom hex code.</p>
+          </div>
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-base-700" id="s-opts-dots-title">Dot Leaders</h3>
+            <p class="text-sm text-base-500 mt-1" id="s-opts-dots-text">When enabled, a dotted line connects each entry title to its page number. Enabled by default.</p>
+          </div>
+          <div class="p-4">
+            <h3 class="text-sm font-medium text-base-700" id="s-opts-lines-title">Section Lines</h3>
+            <p class="text-sm text-base-500 mt-1" id="s-opts-lines-text">Decorative colored bars rendered above and below the table of contents. Enabled by default.</p>
+          </div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-12 pt-4 border-t border-base-200 text-center text-xs text-base-400">
+      <p>TOC Service &middot;
+        <a href="/" class="text-accent-500 hover:text-accent-700 transition-colors" id="footer-link-app">Generator</a> &middot;
+        <a href="/usage" class="text-accent-500 hover:text-accent-700 transition-colors" id="footer-link-usage">API Usage</a>
+      </p>
+    </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════════
+    // i18n
+    // ══════════════════════════════════════════
+
+    const i18n = {
+      de: {
+        pageTitle: 'Anleitung',
+        pageSubtitle: 'Funktionen und Optionen im Überblick',
+        backLink: 'Zurück',
+        overviewTitle: 'Übersicht',
+        overviewText: 'Der TOC-Service erzeugt klickbare PDF-Inhaltsverzeichnisse. Laden Sie Ihre PDF-Dateien hoch und erhalten Sie ein zusammengefügtes Dokument mit einem professionellen Inhaltsverzeichnis als erste Seite. Die Einträge verlinken direkt auf die entsprechenden Seiten im fertigen PDF.',
+        modeaTitle: 'Modus A: Mehrere PDFs hochladen',
+        modeaText: 'Laden Sie mehrere PDF-Dateien gleichzeitig hoch. Der Service fügt sie zu einem einzigen PDF zusammen und stellt eine Inhaltsverzeichnis-Seite voran. Jede hochgeladene Datei wird zu einem Eintrag, wobei der Dateiname (ohne .pdf) als Titel verwendet wird.',
+        modeaOptsTitle: 'Optionen',
+        modeaOptTitle: '<strong>Titel</strong> — wird oben auf der Inhaltsverzeichnis-Seite angezeigt (optional)',
+        modeaOptSubtitle: '<strong>Untertitel</strong> — wird unter dem Titel angezeigt (optional)',
+        modeaOptFont: '<strong>Schriftart</strong> — Auswahl zwischen IBM Plex Sans, Inter oder Roboto',
+        modeaOptColor: '<strong>Linienfarbe</strong> — Farbe der dekorativen Balken; Voreinstellung wählen oder eigenen Hex-Code eingeben',
+        modeaOptBgColor: '<strong>Hintergrundfarbe</strong> — Hintergrundfarbe der Inhaltsverzeichnis-Seite; Voreinstellung wählen oder eigenen Hex-Code eingeben',
+        modeaOptFontColor: '<strong>Schriftfarbe</strong> — Textfarbe auf der Inhaltsverzeichnis-Seite; Voreinstellung wählen oder eigenen Hex-Code eingeben',
+        modeaOptDots: '<strong>Punktführung</strong> — gepunktete Linie zwischen Eintragsname und Seitenzahl',
+        modeaOptLines: '<strong>Abschnittslinien</strong> — dekorative Balken ober- und unterhalb des Inhaltsverzeichnisses',
+        modeaOptMerge: '<strong>Nur zusammenführen</strong> — PDFs zusammenführen ohne sichtbares Inhaltsverzeichnis',
+        modebTitle: 'Modus B: Bestehendes PDF + JSON',
+        modebText: 'Laden Sie ein einzelnes PDF zusammen mit einer JSON-Datei hoch, die die Inhaltsverzeichnis-Einträge definiert. Der Service erzeugt eine Inhaltsverzeichnis-Seite und stellt sie dem bestehenden PDF voran. Dieser Modus ist nützlich, wenn Sie bereits ein zusammengefügtes Dokument haben und ein Inhaltsverzeichnis hinzufügen möchten.',
+        modebOptsTitle: 'Optionen',
+        modebOptsText: 'Gleiche Optionen wie Modus A (Titel, Untertitel, Schriftart, Linienfarbe, Hintergrundfarbe, Schriftfarbe, Punktführung, Abschnittslinien) ausser «Nur zusammenführen».',
+        jsonTitle: 'JSON-Format',
+        jsonText: 'Die JSON-Datei muss ein Array von Objekten enthalten. Jedes Objekt repräsentiert einen Inhaltsverzeichnis-Eintrag.',
+        jsonFieldsTitle: 'Felder',
+        jsonFieldTitleDesc: 'Anzeigename des Eintrags',
+        jsonFieldPageDesc: 'Seitenzahl im Original-PDF, auf der dieser Eintrag beginnt',
+        jsonFieldPagesDesc: 'Anzahl der Seiten für diesen Eintrag (wird als Seitenbereich im Inhaltsverzeichnis angezeigt)',
+        optsTitle: 'Optionen-Referenz',
+        optsFontTitle: 'Schriftart',
+        optsFontText: 'IBM Plex Sans (Standard), Inter oder Roboto. Wird auf die gesamte Inhaltsverzeichnis-Seite angewendet.',
+        optsColorTitle: 'Linienfarbe',
+        optsColorText: 'Farbe der dekorativen Balken ober- und unterhalb des Inhaltsverzeichnisses. Wählen Sie aus Voreinstellungen oder geben Sie einen eigenen Hex-Code ein (z.B. #FF5733).',
+        optsBgColorTitle: 'Hintergrundfarbe',
+        optsBgColorText: 'Hintergrundfarbe der Inhaltsverzeichnis-Seite. Standardmässig weiss. Wählen Sie aus Voreinstellungen oder geben Sie einen eigenen Hex-Code ein.',
+        optsFontColorTitle: 'Schriftfarbe',
+        optsFontColorText: 'Textfarbe auf der Inhaltsverzeichnis-Seite. Standardmässig schwarz. Wählen Sie aus Voreinstellungen oder geben Sie einen eigenen Hex-Code ein.',
+        optsDotTitle: 'Punktführung',
+        optsDotText: 'Wenn aktiviert, verbindet eine gepunktete Linie jeden Eintragstitel mit seiner Seitenzahl. Standardmässig aktiviert.',
+        optsLinesTitle: 'Abschnittslinien',
+        optsLinesText: 'Farbige dekorative Balken ober- und unterhalb des Inhaltsverzeichnisses. Standardmässig aktiviert.',
+        footerApp: 'Generator',
+        footerUsage: 'API-Nutzung',
+      },
+      en: {
+        pageTitle: 'How to Use',
+        pageSubtitle: 'Guide to features and options',
+        backLink: 'Back',
+        overviewTitle: 'Overview',
+        overviewText: 'The TOC Service generates clickable PDF tables of contents. Upload your PDF files and receive a single merged document with a professional table of contents page prepended. The TOC entries link directly to the corresponding pages in the final PDF.',
+        modeaTitle: 'Mode A: Upload Multiple PDFs',
+        modeaText: 'Upload multiple PDF files at once. The service merges them into a single PDF and prepends a table of contents page. Each uploaded file becomes one TOC entry, using the filename (without .pdf) as the entry title.',
+        modeaOptsTitle: 'Options',
+        modeaOptTitle: '<strong>Title</strong> &mdash; displayed at the top of the TOC page (optional)',
+        modeaOptSubtitle: '<strong>Subtitle</strong> &mdash; displayed below the title (optional)',
+        modeaOptFont: '<strong>Font</strong> &mdash; choose between IBM Plex Sans, Inter, or Roboto',
+        modeaOptColor: '<strong>Line color</strong> &mdash; color of the decorative bars; pick a preset or enter a custom hex code',
+        modeaOptBgColor: '<strong>Background color</strong> &mdash; background color of the TOC page; pick a preset or enter a custom hex code',
+        modeaOptFontColor: '<strong>Font color</strong> &mdash; text color on the TOC page; pick a preset or enter a custom hex code',
+        modeaOptDots: '<strong>Dot leaders</strong> &mdash; dotted line between entry name and page number',
+        modeaOptLines: '<strong>Section lines</strong> &mdash; decorative bars above and below the TOC',
+        modeaOptMerge: '<strong>Merge only</strong> &mdash; merge PDFs without adding a visible TOC page',
+        modebTitle: 'Mode B: Existing PDF + JSON',
+        modebText: 'Upload a single PDF together with a JSON file that defines the TOC entries. The service generates a TOC page and prepends it to the existing PDF. This mode is useful when you already have a merged document and want to add a table of contents.',
+        modebOptsTitle: 'Options',
+        modebOptsText: 'Same options as Mode A (title, subtitle, font, line color, background color, font color, dot leaders, section lines) except merge-only.',
+        jsonTitle: 'JSON Format',
+        jsonText: 'The JSON file must contain an array of objects. Each object represents one TOC entry.',
+        jsonFieldsTitle: 'Fields',
+        jsonFieldTitleDesc: 'display name of the TOC entry',
+        jsonFieldPageDesc: 'page number in the original PDF where this entry starts',
+        jsonFieldPagesDesc: 'number of pages for this entry (displayed as page range in the TOC)',
+        optsTitle: 'Options Reference',
+        optsFontTitle: 'Font',
+        optsFontText: 'IBM Plex Sans (default), Inter, or Roboto. Applied to the entire TOC page.',
+        optsColorTitle: 'Line Color',
+        optsColorText: 'Color of the decorative bars above and below the TOC. Choose from preset colors or enter a custom hex code (e.g. #FF5733).',
+        optsBgColorTitle: 'Background Color',
+        optsBgColorText: 'Background color of the TOC page. White by default. Choose from preset colors or enter a custom hex code.',
+        optsFontColorTitle: 'Font Color',
+        optsFontColorText: 'Text color on the TOC page. Black by default. Choose from preset colors or enter a custom hex code.',
+        optsDotTitle: 'Dot Leaders',
+        optsDotText: 'When enabled, a dotted line connects each entry title to its page number. Enabled by default.',
+        optsLinesTitle: 'Section Lines',
+        optsLinesText: 'Decorative colored bars rendered above and below the table of contents. Enabled by default.',
+        footerApp: 'Generator',
+        footerUsage: 'API Usage',
+      },
+    };
+
+    let currentLang = localStorage.getItem('toc-lang') || 'en';
+
+    function t(key) {
+      return i18n[currentLang]?.[key] || i18n.en[key] || key;
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('toc-lang', lang);
+      document.documentElement.lang = lang;
+      applyTranslations();
+      updateLangButtons();
+    }
+
+    function applyTranslations() {
+      document.getElementById('page-title').textContent = t('pageTitle');
+      document.getElementById('page-subtitle').textContent = t('pageSubtitle');
+      document.getElementById('back-link-text').textContent = t('backLink');
+
+      document.getElementById('s-overview-title').textContent = t('overviewTitle');
+      document.getElementById('s-overview-text').textContent = t('overviewText');
+
+      document.getElementById('s-modea-title').textContent = t('modeaTitle');
+      document.getElementById('s-modea-text').textContent = t('modeaText');
+      document.getElementById('s-modea-opts-title').textContent = t('modeaOptsTitle');
+      document.getElementById('s-modea-opt-title').innerHTML = t('modeaOptTitle');
+      document.getElementById('s-modea-opt-subtitle').innerHTML = t('modeaOptSubtitle');
+      document.getElementById('s-modea-opt-font').innerHTML = t('modeaOptFont');
+      document.getElementById('s-modea-opt-color').innerHTML = t('modeaOptColor');
+      document.getElementById('s-modea-opt-bgcolor').innerHTML = t('modeaOptBgColor');
+      document.getElementById('s-modea-opt-fontcolor').innerHTML = t('modeaOptFontColor');
+      document.getElementById('s-modea-opt-dots').innerHTML = t('modeaOptDots');
+      document.getElementById('s-modea-opt-lines').innerHTML = t('modeaOptLines');
+      document.getElementById('s-modea-opt-merge').innerHTML = t('modeaOptMerge');
+
+      document.getElementById('s-modeb-title').textContent = t('modebTitle');
+      document.getElementById('s-modeb-text').textContent = t('modebText');
+      document.getElementById('s-modeb-opts-title').textContent = t('modebOptsTitle');
+      document.getElementById('s-modeb-opts-text').textContent = t('modebOptsText');
+
+      document.getElementById('s-json-title').textContent = t('jsonTitle');
+      document.getElementById('s-json-text').textContent = t('jsonText');
+      document.getElementById('s-json-fields-title').textContent = t('jsonFieldsTitle');
+      document.getElementById('s-json-field-title-desc').textContent = t('jsonFieldTitleDesc');
+      document.getElementById('s-json-field-page-desc').textContent = t('jsonFieldPageDesc');
+      document.getElementById('s-json-field-pages-desc').textContent = t('jsonFieldPagesDesc');
+
+      document.getElementById('s-opts-title').textContent = t('optsTitle');
+      document.getElementById('s-opts-font-title').textContent = t('optsFontTitle');
+      document.getElementById('s-opts-font-text').textContent = t('optsFontText');
+      document.getElementById('s-opts-color-title').textContent = t('optsColorTitle');
+      document.getElementById('s-opts-color-text').textContent = t('optsColorText');
+      document.getElementById('s-opts-bgcolor-title').textContent = t('optsBgColorTitle');
+      document.getElementById('s-opts-bgcolor-text').textContent = t('optsBgColorText');
+      document.getElementById('s-opts-fontcolor-title').textContent = t('optsFontColorTitle');
+      document.getElementById('s-opts-fontcolor-text').textContent = t('optsFontColorText');
+      document.getElementById('s-opts-dots-title').textContent = t('optsDotTitle');
+      document.getElementById('s-opts-dots-text').textContent = t('optsDotText');
+      document.getElementById('s-opts-lines-title').textContent = t('optsLinesTitle');
+      document.getElementById('s-opts-lines-text').textContent = t('optsLinesText');
+
+      document.getElementById('footer-link-app').textContent = t('footerApp');
+      document.getElementById('footer-link-usage').textContent = t('footerUsage');
+
+      document.title = t('pageTitle') + ' – TOC Service';
+    }
+
+    function updateLangButtons() {
+      const btnDe = document.getElementById('lang-de');
+      const btnEn = document.getElementById('lang-en');
+      if (currentLang === 'de') {
+        btnDe.classList.add('bg-accent-600', 'text-white');
+        btnDe.classList.remove('text-base-400', 'hover:text-base-600');
+        btnEn.classList.remove('bg-accent-600', 'text-white');
+        btnEn.classList.add('text-base-400', 'hover:text-base-600');
+      } else {
+        btnEn.classList.add('bg-accent-600', 'text-white');
+        btnEn.classList.remove('text-base-400', 'hover:text-base-600');
+        btnDe.classList.remove('bg-accent-600', 'text-white');
+        btnDe.classList.add('text-base-400', 'hover:text-base-600');
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Theme
+    // ══════════════════════════════════════════
+
+    function toggleTheme() {
+      const isMono = document.body.classList.toggle('theme-mono');
+      localStorage.setItem('toc-theme', isMono ? 'mono' : 'emerald');
+      updateThemeIcon();
+    }
+
+    function updateThemeIcon() {
+      const isMono = document.body.classList.contains('theme-mono');
+      document.getElementById('theme-icon-emerald').classList.toggle('hidden', isMono);
+      document.getElementById('theme-icon-mono').classList.toggle('hidden', !isMono);
+    }
+
+    // ══════════════════════════════════════════
+    // Init
+    // ══════════════════════════════════════════
+
+    if (localStorage.getItem('toc-theme') !== 'emerald') document.body.classList.add('theme-mono');
+    updateThemeIcon();
+    applyTranslations();
+    updateLangButtons();
+  </script>
+</body>
+</html>

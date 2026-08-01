@@ -1,0 +1,39 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Concept 2: Stacked pages with bookmark tab -->
+  <defs>
+    <linearGradient id="g2a" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A2980"/>
+      <stop offset="100%" style="stop-color:#2563EB"/>
+    </linearGradient>
+    <linearGradient id="g2b" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#26D0CE"/>
+      <stop offset="100%" style="stop-color:#1A2980"/>
+    </linearGradient>
+  </defs>
+  <!-- Back page -->
+  <rect x="55" y="30" width="105" height="140" rx="6" fill="#E0E7FF" stroke="#1A2980" stroke-width="1.5" opacity="0.5"/>
+  <!-- Middle page -->
+  <rect x="45" y="38" width="105" height="140" rx="6" fill="#EFF6FF" stroke="#1A2980" stroke-width="1.5" opacity="0.7"/>
+  <!-- Front page -->
+  <rect x="35" y="46" width="105" height="140" rx="6" fill="white" stroke="url(#g2a)" stroke-width="2.5"/>
+
+  <!-- Bookmark tab -->
+  <path d="M 120 46 L 120 75 L 128 68 L 136 75 L 136 46" fill="url(#g2b)"/>
+
+  <!-- TOC lines on front page -->
+  <rect x="50" y="70" width="45" height="5" rx="2.5" fill="#1A2980" opacity="0.7"/>
+  <rect x="50" y="85" width="55" height="5" rx="2.5" fill="#1A2980" opacity="0.5"/>
+  <rect x="50" y="100" width="38" height="5" rx="2.5" fill="#1A2980" opacity="0.4"/>
+  <rect x="50" y="115" width="50" height="5" rx="2.5" fill="#1A2980" opacity="0.3"/>
+  <rect x="50" y="130" width="42" height="5" rx="2.5" fill="#1A2980" opacity="0.2"/>
+
+  <!-- Page numbers -->
+  <text x="108" y="78" font-family="sans-serif" font-size="9" fill="#1A2980" opacity="0.7">1</text>
+  <text x="108" y="93" font-family="sans-serif" font-size="9" fill="#1A2980" opacity="0.5">3</text>
+  <text x="108" y="108" font-family="sans-serif" font-size="9" fill="#1A2980" opacity="0.4">7</text>
+  <text x="108" y="123" font-family="sans-serif" font-size="9" fill="#1A2980" opacity="0.3">12</text>
+  <text x="108" y="138" font-family="sans-serif" font-size="9" fill="#1A2980" opacity="0.2">15</text>
+
+  <!-- Label below -->
+  <text x="88" y="170" font-family="sans-serif" font-size="11" fill="#1A2980" text-anchor="middle" font-weight="600" letter-spacing="1">TOC</text>
+</svg>

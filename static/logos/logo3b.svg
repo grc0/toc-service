@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="PDF TOC icon – variant B">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#1A2980"/>
+      <stop offset="1" stop-color="#26D0CE"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect x="48" y="48" width="416" height="416" rx="64" fill="url(#bg)"/>
+
+  <!-- Document with folded corner -->
+  <path d="M168 120 h168 l40 40 v228 a24 24 0 0 1 -24 24 h-184 a24 24 0 0 1 -24 -24 v-244 a24 24 0 0 1 24 -24z" fill="#ffffff" opacity="0.95"/>
+  <path d="M336 120 v28 a12 12 0 0 0 12 12 h28z" fill="#ffffff" opacity="0.5"/>
+
+  <!-- Three white lines on dark-tinted document area -->
+  <rect x="196" y="212" width="128" height="12" rx="6" fill="#1A2980" opacity="0.6"/>
+  <rect x="196" y="248" width="92" height="12" rx="6" fill="#1A2980" opacity="0.38"/>
+  <rect x="196" y="284" width="112" height="12" rx="6" fill="#1A2980" opacity="0.2"/>
+</svg>

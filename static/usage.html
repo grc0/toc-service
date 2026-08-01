@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>API Usage – TOC Service</title>
+  <link rel="icon" type="image/svg+xml" href="/static/logos/logo3a.svg">
+  <script src="/static/tailwindcss.js"></script>
+  <script>
+    tailwind.config = {
+      safelist: [
+        'bg-accent-500', 'bg-accent-100', 'text-accent-700',
+        'bg-accent-600', 'text-accent-600',
+        'bg-base-800', 'text-base-600', 'text-base-500', 'text-base-700',
+        'hover:bg-base-50', 'text-base-400', 'hover:text-base-600',
+      ],
+      theme: {
+        extend: {
+          colors: {
+            accent: {
+              50:  'var(--c-accent-50)',
+              100: 'var(--c-accent-100)',
+              500: 'var(--c-accent-500)',
+              600: 'var(--c-accent-600)',
+              700: 'var(--c-accent-700)',
+              800: 'var(--c-accent-800)',
+            },
+            base: {
+              50:  'var(--c-base-50)',
+              100: 'var(--c-base-100)',
+              200: 'var(--c-base-200)',
+              300: 'var(--c-base-300)',
+              400: 'var(--c-base-400)',
+              500: 'var(--c-base-500)',
+              600: 'var(--c-base-600)',
+              700: 'var(--c-base-700)',
+              800: 'var(--c-base-800)',
+              900: 'var(--c-base-900)',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    :root {
+      --c-accent-50:  #ecfdf5; --c-accent-100: #d1fae5;
+      --c-accent-500: #10b981; --c-accent-600: #059669;
+      --c-accent-700: #047857; --c-accent-800: #065f46;
+      --c-base-50:  #fafafa; --c-base-100: #f4f4f5;
+      --c-base-200: #e4e4e7; --c-base-300: #d4d4d8;
+      --c-base-400: #a1a1aa; --c-base-500: #71717a;
+      --c-base-600: #52525b; --c-base-700: #3f3f46;
+      --c-base-800: #27272a; --c-base-900: #18181b;
+    }
+    .theme-mono {
+      --c-accent-50:  #fafafa; --c-accent-100: #f4f4f5;
+      --c-accent-500: #71717a; --c-accent-600: #18181b;
+      --c-accent-700: #27272a; --c-accent-800: #18181b;
+      --c-base-50:  #ffffff; --c-base-100: #fafafa;
+      --c-base-200: #e5e7eb; --c-base-300: #d1d5db;
+      --c-base-400: #9ca3af; --c-base-500: #6b7280;
+      --c-base-600: #4b5563; --c-base-700: #374151;
+      --c-base-800: #1f2937; --c-base-900: #111827;
+    }
+    html { overflow-y: scroll; }
+    .bar { transition: width 0.4s ease; }
+  </style>
+</head>
+<body class="bg-base-50 min-h-screen">
+  <div class="max-w-4xl mx-auto px-4 py-8">
+
+    <!-- Header -->
+    <div class="mb-8 flex justify-between items-start">
+      <div class="flex items-center gap-3">
+        <img src="/static/logos/logo3a.svg" alt="TOC Service" class="h-10 w-10">
+        <div>
+          <h1 class="text-2xl font-bold text-base-900" id="page-title">API Usage</h1>
+          <p class="text-base-500 mt-1" id="page-subtitle">Overview of API calls and parameters</p>
+        </div>
+      </div>
+      <div class="flex items-center gap-3">
+        <!-- Theme Toggle -->
+        <button onclick="toggleTheme()" id="theme-toggle"
+          class="p-1.5 rounded-md text-base-400 hover:text-base-600 hover:bg-base-100 transition-colors"
+          title="Toggle theme">
+          <svg id="theme-icon-emerald" class="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9.53 16.122a3 3 0 0 0-5.78 1.128 2.25 2.25 0 0 1-2.4 2.245 4.5 4.5 0 0 0 8.4-2.245c0-.399-.078-.78-.22-1.128Zm0 0a15.998 15.998 0 0 0 3.388-1.62m-5.043-.025a15.994 15.994 0 0 1 1.622-3.395m3.42 3.42a15.995 15.995 0 0 0 4.764-4.648l3.876-5.814a1.151 1.151 0 0 0-1.597-1.597L14.146 6.32a15.996 15.996 0 0 0-4.649 4.763m3.42 3.42a6.776 6.776 0 0 0-3.42-3.42"/>
+          </svg>
+          <svg id="theme-icon-mono" class="h-4 w-4 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/>
+            <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 0 1 9 14.437V9.564Z"/>
+          </svg>
+        </button>
+        <!-- Language Switcher -->
+        <div class="flex items-center gap-1">
+          <button onclick="setLang('en')" id="lang-en"
+            class="px-2 py-1 text-xs font-medium rounded transition-colors">EN</button>
+          <span class="text-base-300">|</span>
+          <button onclick="setLang('de')" id="lang-de"
+            class="px-2 py-1 text-xs font-medium rounded transition-colors">DE</button>
+        </div>
+        <a href="/" class="text-sm text-accent-600 hover:text-accent-800 transition-colors">&larr; <span id="back-link-text">Back</span></a>
+      </div>
+    </div>
+
+    <!-- Loading -->
+    <div id="loading" class="flex justify-center py-12">
+      <svg class="animate-spin h-6 w-6 text-accent-600" fill="none" viewBox="0 0 24 24">
+        <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/>
+        <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"/>
+      </svg>
+    </div>
+
+    <!-- Dashboard Content -->
+    <div id="dashboard" class="hidden space-y-6">
+
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-base-500 uppercase" id="label-total">Total Calls</p>
+          <p class="text-2xl font-bold text-base-900 mt-1" id="stat-total">0</p>
+        </div>
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-accent-600 uppercase" id="label-success">Successful</p>
+          <p class="text-2xl font-bold text-accent-700 mt-1" id="stat-success">0</p>
+        </div>
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-red-500 uppercase" id="label-errors">Errors</p>
+          <p class="text-2xl font-bold text-red-600 mt-1" id="stat-errors">0</p>
+        </div>
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-base-500 uppercase" id="label-avg-duration">Avg. Duration</p>
+          <p class="text-2xl font-bold text-base-900 mt-1" id="stat-avg-duration">0 ms</p>
+        </div>
+      </div>
+
+      <!-- Second row: files + modes -->
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-base-500 uppercase" id="label-files">Files Processed</p>
+          <p class="text-2xl font-bold text-base-900 mt-1" id="stat-files">0</p>
+        </div>
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-base-500 uppercase" id="label-folder-mode">Folder Mode</p>
+          <p class="text-2xl font-bold text-base-900 mt-1" id="stat-folder">0</p>
+        </div>
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-base-500 uppercase" id="label-json-mode">JSON Mode</p>
+          <p class="text-2xl font-bold text-base-900 mt-1" id="stat-json">0</p>
+        </div>
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <p class="text-xs font-medium text-base-500 uppercase" id="label-success-rate">Success Rate</p>
+          <p class="text-2xl font-bold text-base-900 mt-1" id="stat-rate">–</p>
+        </div>
+      </div>
+
+      <!-- Charts Row -->
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+        <!-- Daily Chart -->
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <h3 class="text-sm font-medium text-base-700 mb-3" id="label-daily">Calls per Day (last 30 days)</h3>
+          <div id="daily-chart" class="h-32 flex items-end gap-px"></div>
+          <div id="daily-empty" class="hidden h-32 flex items-center justify-center text-sm text-base-400" id="no-data-text">No data yet</div>
+        </div>
+
+        <!-- Breakdown -->
+        <div class="bg-white rounded-lg border border-base-200 p-4">
+          <h3 class="text-sm font-medium text-base-700 mb-3" id="label-breakdown">Parameter Breakdown</h3>
+          <div class="space-y-3" id="breakdown-content">
+            <!-- Language -->
+            <div>
+              <p class="text-xs text-base-500 mb-1" id="label-lang-dist">Language</p>
+              <div id="lang-bars"></div>
+            </div>
+            <!-- Font -->
+            <div>
+              <p class="text-xs text-base-500 mb-1" id="label-font-dist">Font</p>
+              <div id="font-bars"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Calls Table -->
+      <div class="bg-white rounded-lg border border-base-200 overflow-hidden">
+        <div class="px-4 py-3 border-b border-base-200">
+          <h3 class="text-sm font-medium text-base-700" id="label-recent">Recent API Calls</h3>
+        </div>
+        <div class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-base-50">
+              <tr>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-time">Time</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-mode">Mode</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-files">Files</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-title">Title</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-params">Parameters</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-duration">Duration</th>
+                <th class="px-3 py-2 text-left text-xs font-medium text-base-500 uppercase" id="th-status">Status</th>
+              </tr>
+            </thead>
+            <tbody id="calls-body" class="divide-y divide-base-100"></tbody>
+          </table>
+        </div>
+        <div id="no-calls" class="hidden px-4 py-8 text-center text-sm text-base-400" id="no-calls-text">No API calls recorded yet</div>
+      </div>
+    </div>
+
+    <!-- Error State -->
+    <div id="error-state" class="hidden text-center py-12">
+      <p class="text-red-600 text-sm" id="error-message"></p>
+    </div>
+
+    <!-- Footer -->
+    <div class="mt-12 pt-4 border-t border-base-200 text-center text-xs text-base-400">
+      <p>TOC Service · <a href="/howto" class="text-accent-500 hover:text-accent-700 transition-colors" id="footer-howto">How to Use</a> · API Usage Dashboard</p>
+    </div>
+  </div>
+
+  <script>
+    // ══════════════════════════════════════════
+    // i18n
+    // ══════════════════════════════════════════
+
+    const i18n = {
+      de: {
+        pageTitle: 'API-Nutzung',
+        pageSubtitle: 'Übersicht der API-Aufrufe und Parameter',
+        backLink: 'Zurück',
+        footerHowTo: 'Anleitung',
+        labelTotal: 'Aufrufe gesamt',
+        labelSuccess: 'Erfolgreich',
+        labelErrors: 'Fehler',
+        labelAvgDuration: 'Ø Dauer',
+        labelFiles: 'Dateien verarbeitet',
+        labelFolderMode: 'Ordner-Modus',
+        labelJsonMode: 'JSON-Modus',
+        labelSuccessRate: 'Erfolgsquote',
+        labelDaily: 'Aufrufe pro Tag (letzte 30 Tage)',
+        labelBreakdown: 'Parameter-Verteilung',
+        labelLangDist: 'Sprache',
+        labelFontDist: 'Schriftart',
+        labelRecent: 'Letzte API-Aufrufe',
+        thTime: 'Zeit',
+        thMode: 'Modus',
+        thFiles: 'Dateien',
+        thTitle: 'Titel',
+        thParams: 'Parameter',
+        thDuration: 'Dauer',
+        thStatus: 'Status',
+        noData: 'Noch keine Daten',
+        noCalls: 'Noch keine API-Aufrufe aufgezeichnet',
+        folder: 'Ordner',
+        json: 'JSON',
+        success: 'OK',
+        error: 'Fehler',
+      },
+      en: {
+        pageTitle: 'API Usage',
+        pageSubtitle: 'Overview of API calls and parameters',
+        backLink: 'Back',
+        footerHowTo: 'How to Use',
+        labelTotal: 'Total Calls',
+        labelSuccess: 'Successful',
+        labelErrors: 'Errors',
+        labelAvgDuration: 'Avg. Duration',
+        labelFiles: 'Files Processed',
+        labelFolderMode: 'Folder Mode',
+        labelJsonMode: 'JSON Mode',
+        labelSuccessRate: 'Success Rate',
+        labelDaily: 'Calls per Day (last 30 days)',
+        labelBreakdown: 'Parameter Breakdown',
+        labelLangDist: 'Language',
+        labelFontDist: 'Font',
+        labelRecent: 'Recent API Calls',
+        thTime: 'Time',
+        thMode: 'Mode',
+        thFiles: 'Files',
+        thTitle: 'Title',
+        thParams: 'Parameters',
+        thDuration: 'Duration',
+        thStatus: 'Status',
+        noData: 'No data yet',
+        noCalls: 'No API calls recorded yet',
+        folder: 'Folder',
+        json: 'JSON',
+        success: 'OK',
+        error: 'Error',
+      },
+    };
+
+    let currentLang = localStorage.getItem('toc-lang') || 'en';
+
+    function t(key) {
+      return i18n[currentLang]?.[key] || i18n.en[key] || key;
+    }
+
+    function setLang(lang) {
+      currentLang = lang;
+      localStorage.setItem('toc-lang', lang);
+      document.documentElement.lang = lang;
+      applyTranslations();
+      updateLangButtons();
+      // Re-render with current data
+      if (lastData) render(lastData);
+    }
+
+    function applyTranslations() {
+      document.getElementById('page-title').textContent = t('pageTitle');
+      document.getElementById('page-subtitle').textContent = t('pageSubtitle');
+      document.getElementById('back-link-text').textContent = t('backLink');
+      document.getElementById('label-total').textContent = t('labelTotal');
+      document.getElementById('label-success').textContent = t('labelSuccess');
+      document.getElementById('label-errors').textContent = t('labelErrors');
+      document.getElementById('label-avg-duration').textContent = t('labelAvgDuration');
+      document.getElementById('label-files').textContent = t('labelFiles');
+      document.getElementById('label-folder-mode').textContent = t('labelFolderMode');
+      document.getElementById('label-json-mode').textContent = t('labelJsonMode');
+      document.getElementById('label-success-rate').textContent = t('labelSuccessRate');
+      document.getElementById('label-daily').textContent = t('labelDaily');
+      document.getElementById('label-breakdown').textContent = t('labelBreakdown');
+      document.getElementById('label-lang-dist').textContent = t('labelLangDist');
+      document.getElementById('label-font-dist').textContent = t('labelFontDist');
+      document.getElementById('label-recent').textContent = t('labelRecent');
+      document.getElementById('th-time').textContent = t('thTime');
+      document.getElementById('th-mode').textContent = t('thMode');
+      document.getElementById('th-files').textContent = t('thFiles');
+      document.getElementById('th-title').textContent = t('thTitle');
+      document.getElementById('th-params').textContent = t('thParams');
+      document.getElementById('th-duration').textContent = t('thDuration');
+      document.getElementById('th-status').textContent = t('thStatus');
+      document.getElementById('footer-howto').textContent = t('footerHowTo');
+      document.title = t('pageTitle') + ' – TOC Service';
+    }
+
+    function updateLangButtons() {
+      const btnDe = document.getElementById('lang-de');
+      const btnEn = document.getElementById('lang-en');
+      if (currentLang === 'de') {
+        btnDe.classList.add('bg-accent-600', 'text-white');
+        btnDe.classList.remove('text-base-400', 'hover:text-base-600');
+        btnEn.classList.remove('bg-accent-600', 'text-white');
+        btnEn.classList.add('text-base-400', 'hover:text-base-600');
+      } else {
+        btnEn.classList.add('bg-accent-600', 'text-white');
+        btnEn.classList.remove('text-base-400', 'hover:text-base-600');
+        btnDe.classList.remove('bg-accent-600', 'text-white');
+        btnDe.classList.add('text-base-400', 'hover:text-base-600');
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Data & Rendering
+    // ══════════════════════════════════════════
+
+    let lastData = null;
+
+    function escapeHtml(str) {
+      const div = document.createElement('div');
+      div.textContent = str;
+      return div.innerHTML;
+    }
+
+    function renderBarChart(containerId, data, maxVal) {
+      const container = document.getElementById(containerId);
+      if (!data || Object.keys(data).length === 0) {
+        container.innerHTML = `<span class="text-xs text-base-400">–</span>`;
+        return;
+      }
+      const total = Object.values(data).reduce((a, b) => a + b, 0);
+      container.innerHTML = Object.entries(data).map(([label, count]) => {
+        const pct = total > 0 ? Math.round((count / total) * 100) : 0;
+        return `
+          <div class="flex items-center gap-2 mb-1">
+            <span class="text-xs text-base-600 w-24 truncate">${escapeHtml(label || '–')}</span>
+            <div class="flex-1 bg-base-100 rounded-full h-2">
+              <div class="bar bg-accent-500 h-2 rounded-full" style="width: ${pct}%"></div>
+            </div>
+            <span class="text-xs text-base-500 w-16 text-right">${count} (${pct}%)</span>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function renderDailyChart(dailyData) {
+      const chart = document.getElementById('daily-chart');
+      const empty = document.getElementById('daily-empty');
+
+      if (!dailyData || dailyData.length === 0) {
+        chart.classList.add('hidden');
+        empty.classList.remove('hidden');
+        empty.textContent = t('noData');
+        return;
+      }
+
+      chart.classList.remove('hidden');
+      empty.classList.add('hidden');
+
+      const max = Math.max(...dailyData.map(d => d.count), 1);
+      chart.innerHTML = dailyData.map(d => {
+        const h = Math.max((d.count / max) * 100, 4);
+        const shortDate = d.date.slice(5); // MM-DD
+        return `
+          <div class="flex-1 h-full flex flex-col items-center justify-end group relative">
+            <div class="absolute -top-6 bg-base-800 text-white text-xs px-1.5 py-0.5 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+              ${d.date}: ${d.count}
+            </div>
+            <div class="w-full bg-accent-500 rounded-t" style="height: ${h}%"></div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    function formatParams(call) {
+      const parts = [];
+      if (call.font) parts.push(call.font);
+      if (call.lang) parts.push(call.lang.toUpperCase());
+      if (call.dot_leaders) parts.push('dots');
+      if (call.show_lines) parts.push('lines');
+      if (call.merge_only) parts.push('merge-only');
+      if (call.line_color) parts.push(call.line_color);
+      return parts.join(', ') || '–';
+    }
+
+    function formatTime(ts) {
+      if (!ts) return '–';
+      const d = new Date(ts + 'Z');
+      return d.toLocaleString(currentLang === 'de' ? 'de-DE' : 'en-US', {
+        month: 'short', day: 'numeric',
+        hour: '2-digit', minute: '2-digit', second: '2-digit',
+      });
+    }
+
+    function render(data) {
+      lastData = data;
+      const { stats, recent } = data;
+
+      // Stats cards
+      document.getElementById('stat-total').textContent = stats.total_calls;
+      document.getElementById('stat-success').textContent = stats.successful;
+      document.getElementById('stat-errors').textContent = stats.errors;
+      document.getElementById('stat-avg-duration').textContent = stats.avg_duration_ms + ' ms';
+      document.getElementById('stat-files').textContent = stats.total_files_processed;
+      document.getElementById('stat-folder').textContent = stats.by_mode.folder || 0;
+      document.getElementById('stat-json').textContent = stats.by_mode.json || 0;
+      document.getElementById('stat-rate').textContent = stats.total_calls > 0
+        ? Math.round((stats.successful / stats.total_calls) * 100) + '%'
+        : '–';
+
+      // Charts
+      renderDailyChart(stats.daily_calls);
+      renderBarChart('lang-bars', stats.by_lang);
+      renderBarChart('font-bars', stats.by_font);
+
+      // Table
+      const tbody = document.getElementById('calls-body');
+      const noCalls = document.getElementById('no-calls');
+
+      if (recent.length === 0) {
+        tbody.innerHTML = '';
+        noCalls.classList.remove('hidden');
+        noCalls.textContent = t('noCalls');
+      } else {
+        noCalls.classList.add('hidden');
+        tbody.innerHTML = recent.map(call => `
+          <tr class="hover:bg-base-50">
+            <td class="px-3 py-2 text-xs text-base-600 whitespace-nowrap">${formatTime(call.timestamp)}</td>
+            <td class="px-3 py-2">
+              <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${
+                call.mode === 'folder'
+                  ? 'bg-accent-100 text-accent-700'
+                  : 'bg-purple-100 text-purple-700'
+              }">${call.mode === 'folder' ? t('folder') : t('json')}</span>
+            </td>
+            <td class="px-3 py-2 text-xs text-base-700">${call.file_count}</td>
+            <td class="px-3 py-2 text-xs text-base-700 max-w-[150px] truncate" title="${escapeHtml(call.title || '')}">${escapeHtml(call.title || '–')}</td>
+            <td class="px-3 py-2 text-xs text-base-500 max-w-[200px] truncate" title="${escapeHtml(formatParams(call))}">${escapeHtml(formatParams(call))}</td>
+            <td class="px-3 py-2 text-xs text-base-600 whitespace-nowrap">${call.duration_ms} ms</td>
+            <td class="px-3 py-2">
+              <span class="inline-flex px-2 py-0.5 rounded text-xs font-medium ${
+                call.status === 'success'
+                  ? 'bg-accent-100 text-accent-700'
+                  : 'bg-red-100 text-red-700'
+              }" ${call.error ? `title="${escapeHtml(call.error)}"` : ''}>${call.status === 'success' ? t('success') : t('error')}</span>
+            </td>
+          </tr>
+        `).join('');
+      }
+    }
+
+    // ══════════════════════════════════════════
+    // Init
+    // ══════════════════════════════════════════
+
+    async function loadData() {
+      try {
+        const resp = await fetch('/api/usage?limit=100');
+        if (!resp.ok) throw new Error(`HTTP ${resp.status}`);
+        const data = await resp.json();
+
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('dashboard').classList.remove('hidden');
+        render(data);
+      } catch (err) {
+        document.getElementById('loading').classList.add('hidden');
+        document.getElementById('error-state').classList.remove('hidden');
+        document.getElementById('error-message').textContent = `Failed to load usage data: ${err.message}`;
+      }
+    }
+
+    // ── Theme ──
+    function toggleTheme() {
+      const isMono = document.body.classList.toggle('theme-mono');
+      localStorage.setItem('toc-theme', isMono ? 'mono' : 'emerald');
+      updateThemeIcon();
+    }
+    function updateThemeIcon() {
+      const isMono = document.body.classList.contains('theme-mono');
+      document.getElementById('theme-icon-emerald').classList.toggle('hidden', isMono);
+      document.getElementById('theme-icon-mono').classList.toggle('hidden', !isMono);
+    }
+    if (localStorage.getItem('toc-theme') !== 'emerald') document.body.classList.add('theme-mono');
+    updateThemeIcon();
+
+    applyTranslations();
+    updateLangButtons();
+    loadData();
+
+    // Auto-refresh every 30 seconds
+    setInterval(loadData, 30000);
+  </script>
+</body>
+</html>

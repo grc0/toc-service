@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" width="200" height="200">
+  <!-- Concept 4: Circular badge with document icon and TOC text -->
+  <defs>
+    <linearGradient id="g4" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1A2980"/>
+      <stop offset="100%" style="stop-color:#26D0CE"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Outer circle -->
+  <circle cx="100" cy="100" r="88" fill="none" stroke="url(#g4)" stroke-width="4"/>
+  <!-- Inner circle -->
+  <circle cx="100" cy="100" r="78" fill="#FAFBFF"/>
+
+  <!-- Document icon centered -->
+  <rect x="72" y="45" width="56" height="72" rx="5" fill="white" stroke="#1A2980" stroke-width="2.5"/>
+  <!-- Folded corner -->
+  <path d="M 108 45 L 128 65 L 108 65 Z" fill="#EFF6FF" stroke="#1A2980" stroke-width="1.5"/>
+
+  <!-- TOC lines inside document -->
+  <rect x="82" y="72" width="25" height="4" rx="2" fill="#1A2980"/>
+  <circle cx="112" cy="74" r="1.5" fill="#26D0CE"/>
+  <circle cx="117" cy="74" r="1.5" fill="#26D0CE"/>
+  <text x="122" y="77" font-family="sans-serif" font-size="7" fill="#1A2980">1</text>
+
+  <rect x="82" y="82" width="18" height="4" rx="2" fill="#2563EB"/>
+  <circle cx="106" cy="84" r="1.5" fill="#26D0CE"/>
+  <circle cx="111" cy="84" r="1.5" fill="#26D0CE"/>
+  <circle cx="116" cy="84" r="1.5" fill="#26D0CE"/>
+  <text x="122" y="87" font-family="sans-serif" font-size="7" fill="#2563EB">4</text>
+
+  <rect x="82" y="92" width="22" height="4" rx="2" fill="#059669"/>
+  <circle cx="111" cy="94" r="1.5" fill="#26D0CE"/>
+  <circle cx="116" cy="94" r="1.5" fill="#26D0CE"/>
+  <text x="122" y="97" font-family="sans-serif" font-size="7" fill="#059669">8</text>
+
+  <!-- "TOC" text below document -->
+  <text x="100" y="142" font-family="sans-serif" font-size="22" fill="#1A2980" text-anchor="middle" font-weight="800" letter-spacing="4">TOC</text>
+
+  <!-- Subtitle -->
+  <text x="100" y="158" font-family="sans-serif" font-size="8" fill="#2563EB" text-anchor="middle" letter-spacing="2" opacity="0.7">SERVICE</text>
+</svg>
