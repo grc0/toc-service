@@ -29,6 +29,7 @@ var (
 	maxJSONBytes             = int64(maxJSONMB) * 1024 * 1024
 	maxFiles                 = envInt("MAX_FILES", 100)
 	typstVersionTimeout      = time.Duration(envInt("TYPST_VERSION_TIMEOUT_SECONDS", 2)) * time.Second
+	healthCheckTimeout       = time.Duration(envInt("HEALTHCHECK_TIMEOUT_SECONDS", 3)) * time.Second
 )
 
 // ──────────────────────────────────────────────
@@ -559,7 +560,29 @@ func runCommandWithTimeout(timeout time.Duration, name string, args ...string) (
 // Main
 // ──────────────────────────────────────────────
 
+// runHealthCheck probes the local /health endpoint and reports the result via
+// the exit code. It exists so the container image does not need wget or curl
+// just to answer Docker's HEALTHCHECK.
+func runHealthCheck() int {
+	client := &http.Client{Timeout: healthCheckTimeout}
+	resp, err := client.Get("http://127.0.0.1:8000/health")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "healthcheck:", err)
+		return 1
+	}
+	defer resp.Body.Close()
+	if resp.StatusCode != http.StatusOK {
+		fmt.Fprintln(os.Stderr, "healthcheck: status", resp.StatusCode)
+		return 1
+	}
+	return 0
+}
+
 func main() {
+	if len(os.Args) > 1 && os.Args[1] == "-healthcheck" {
+		os.Exit(runHealthCheck())
+	}
+
 	slog.Info("starting toc-service", "port", 8000)
 
 	if err := initDB(); err != nil {
