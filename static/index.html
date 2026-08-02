@@ -416,6 +416,13 @@
             data-i18n="btnDownload"></button>
         </div>
       </div>
+
+      <!-- Nav -->
+      <nav class="px-4 py-2.5 border-t border-zinc-800 bg-zinc-950 flex items-center gap-3 text-[13px] text-zinc-500">
+        <a href="/howto" class="hover:text-zinc-300 transition" data-i18n="navHowTo"></a>
+        <a href="/usage" class="hover:text-zinc-300 transition" data-i18n="navUsage"></a>
+        <a href="/local" class="ml-auto hover:text-zinc-300 transition" data-i18n="navLocal"></a>
+      </nav>
     </aside>
 
     <!-- Resize handle (desktop only) -->
@@ -502,6 +509,7 @@
         btnShowPreview: 'Show preview', btnClose: 'Close',
         colorCustom: 'Custom…', btnResetColors: 'Reset',
         appTitle: 'PDF Table of Contents Generator',
+        navHowTo: 'How-to', navUsage: 'Usage', navLocal: 'Browser-only mode →',
         statusFiles: (n, mb) => `${n} file${n===1?'':'s'} · ${mb}`,
         fallback: 'inhaltsverzeichnis.pdf',
       },
@@ -523,6 +531,7 @@
         btnShowPreview: 'Vorschau anzeigen', btnClose: 'Schließen',
         colorCustom: 'Eigene…', btnResetColors: 'Zurücksetzen',
         appTitle: 'PDF Inhaltsverzeichnis-Generator',
+        navHowTo: 'Anleitung', navUsage: 'Nutzung', navLocal: 'Browser-Modus →',
         statusFiles: (n, mb) => `${n} Datei${n===1?'':'en'} · ${mb}`,
         fallback: 'inhaltsverzeichnis.pdf',
       },
