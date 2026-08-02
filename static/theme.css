@@ -1,0 +1,66 @@
+/* ══════════════════════════════════════════════════════════════════
+   Shared design tokens for index.html and local.html.
+
+   Both pages default to the dark Studio look and switch to light by
+   toggling `.theme-light` on <body> (persisted under `toc-theme`).
+   Page-specific chrome stays in each page's own <style> block; only
+   what both pages need lives here.
+   ══════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* Raw palette — emerald accent over a zinc ramp (50 = lightest) */
+  --c-accent-50:  #ecfdf5; --c-accent-100: #d1fae5;
+  --c-accent-500: #10b981; --c-accent-600: #059669;
+  --c-accent-700: #047857; --c-accent-800: #065f46;
+  --c-base-50:  #fafafa; --c-base-100: #f4f4f5;
+  --c-base-200: #e4e4e7; --c-base-300: #d4d4d8;
+  --c-base-400: #a1a1aa; --c-base-500: #71717a;
+  --c-base-600: #52525b; --c-base-700: #3f3f46;
+  --c-base-800: #27272a; --c-base-900: #18181b;
+
+  /* Semantic tokens — dark by default */
+  --c-sidebar-accent: #10b981;
+  --c-surface:        #09090b;
+  --c-surface-raised: #18181b;
+  --c-line:           #3f3f46;
+  --c-line-strong:    #52525b;
+  --c-text:           #e4e4e7;
+  --c-text-muted:     #a1a1aa;
+  --c-text-faint:     #71717a;
+  --c-tint:           rgba(16, 185, 129, .14);
+  --c-danger:         #f87171;
+  --c-danger-tint:    rgba(239, 68, 68, .14);
+}
+
+.theme-light {
+  --c-sidebar-accent: #059669;
+  --c-surface:        #fafafa;
+  --c-surface-raised: #ffffff;
+  --c-line:           #d4d4d8;
+  --c-line-strong:    #a1a1aa;
+  --c-text:           #18181b;
+  --c-text-muted:     #52525b;
+  --c-text-faint:     #a1a1aa;
+  --c-tint:           #ecfdf5;
+  --c-danger:         #b91c1c;
+  --c-danger-tint:    #fef2f2;
+}
+
+body {
+  font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+
+/* ── Drag & drop (file list + drop zone) ───────────────────────── */
+
+.drop-zone.drag-over {
+  border-color: var(--c-sidebar-accent);
+  background-color: rgba(255, 255, 255, .04);
+}
+.theme-light .drop-zone.drag-over { background-color: rgba(0, 0, 0, .04); }
+
+.file-item { transition: background-color .15s; }
+.file-item.dragging { opacity: .4; }
+.file-item.drag-over-item { border-top: 2px solid var(--c-sidebar-accent); }
+
+.drag-handle { cursor: grab; user-select: none; }
+.drag-handle:active { cursor: grabbing; }

@@ -6,33 +6,10 @@
   <title>PDF Table of Contents Generator</title>
   <link rel="icon" type="image/svg+xml" href="/static/logos/logo3a.svg">
   <script src="/static/tailwindcss.js"></script>
-  <script>
-    tailwind.config = {
-      safelist: ['bg-accent-600', 'text-accent-600', 'border-accent-600', 'ring-accent-500'],
-      theme: { extend: { colors: {
-        accent: {
-          50:'var(--c-accent-50)', 100:'var(--c-accent-100)', 500:'var(--c-accent-500)',
-          600:'var(--c-accent-600)', 700:'var(--c-accent-700)', 800:'var(--c-accent-800)',
-        },
-        base: {
-          50:'var(--c-base-50)', 100:'var(--c-base-100)', 200:'var(--c-base-200)',
-          300:'var(--c-base-300)', 400:'var(--c-base-400)', 500:'var(--c-base-500)',
-          600:'var(--c-base-600)', 700:'var(--c-base-700)', 800:'var(--c-base-800)', 900:'var(--c-base-900)',
-        },
-      }}}
-    }
-  </script>
+  <script src="/static/theme.js"></script>
+  <link rel="stylesheet" href="/static/theme.css">
   <style>
-    /* Default: dark sidebar (standard Studio look) */
-    :root {
-      --c-accent-50:#ecfdf5;--c-accent-100:#d1fae5;--c-accent-500:#10b981;
-      --c-accent-600:#059669;--c-accent-700:#047857;--c-accent-800:#065f46;
-      --c-base-50:#fafafa;--c-base-100:#f4f4f5;--c-base-200:#e4e4e7;--c-base-300:#d4d4d8;
-      --c-base-400:#a1a1aa;--c-base-500:#71717a;--c-base-600:#52525b;
-      --c-base-700:#3f3f46;--c-base-800:#27272a;--c-base-900:#18181b;
-      --c-sidebar-accent:#10b981;
-    }
-    .theme-light { --c-sidebar-accent:#059669; }
+    /* Palette and shared drag/drop rules live in theme.css */
 
     /* Light-mode sidebar surface overrides */
     .theme-light aside {
@@ -61,23 +38,16 @@
     .theme-light .title-input { background:#ffffff; color:#18181b; }
     .theme-light .seg.active { background:#18181b; color:#ffffff; }
     .theme-light .file-row.editing { background:#f4f4f5; }
-    .theme-light .drop-zone.drag-over { background:rgba(0,0,0,.04); }
     .theme-light .switch .slider { background:#e4e4e7; }
     .theme-light .switch input:checked + .slider:before { background:#ffffff; }
     .theme-light #divider { background:#e4e4e7; }
     .theme-light #divider:hover, .theme-light #divider.dragging { background:#059669; }
     .theme-light .file-row.has-custom .file-title { color:#059669; }
     .theme-light #btn-preview-mobile { background:#f4f4f5 !important; color:#18181b !important; border-color:#d4d4d8 !important; }
-    body { font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
     html, body { overflow: hidden; height: 100%; }
     .seg.active { background:#fff; color:#18181b; }
     .seg-accent { color: var(--c-sidebar-accent); }
     .ring-sidebar { box-shadow: 0 0 0 2px var(--c-sidebar-accent); }
-    .file-item.dragging { opacity: .4; }
-    .file-item.drag-over-item { border-top: 2px solid var(--c-sidebar-accent); }
-    .drag-handle { cursor: grab; user-select: none; }
-    .drag-handle:active { cursor: grabbing; }
-    .drop-zone.drag-over { border-color: var(--c-sidebar-accent); background-color: rgba(255,255,255,.04); }
     .scroll::-webkit-scrollbar { width: 8px; height: 8px; }
     .scroll::-webkit-scrollbar-thumb { background: #3f3f46; border-radius: 4px; }
     .scroll::-webkit-scrollbar-thumb:hover { background: #52525b; }
@@ -226,7 +196,6 @@
     }
     .switch input:checked + .slider { background: var(--c-sidebar-accent); }
     .switch input:checked + .slider:before { transform: translateX(16px); }
-    .theme-mono .switch input:checked + .slider:before { background: #18181b; }
 
     /* Mobile sheet for preview */
     @media (max-width: 767px) {
@@ -483,7 +452,10 @@
 
       <div class="px-4 py-1.5 bg-white border-t border-base-200 text-[13px] text-base-500 flex items-center justify-between">
         <span id="footer-stats">—</span>
-        <span data-i18n="autoPreview"></span>
+        <label class="flex items-center gap-1.5 cursor-pointer select-none">
+          <input type="checkbox" id="auto-preview" checked onchange="onAutoPreviewToggle()">
+          <span data-i18n="autoPreview"></span>
+        </label>
       </div>
     </main>
   </div>
@@ -505,7 +477,8 @@
         previewEmptyTitle: 'Add files to see a live preview',
         previewEmptyHint: 'Every change re-renders the actual PDF',
         rendering: 'Rendering preview', errorTitle: 'Render failed',
-        autoPreview: 'Auto-preview on change', btnDownload: 'Download PDF',
+        autoPreview: 'Auto-preview on change', previewPaused: 'Auto-preview off',
+        btnDownload: 'Download PDF',
         btnShowPreview: 'Show preview', btnClose: 'Close',
         colorCustom: 'Custom…', btnResetColors: 'Reset',
         appTitle: 'PDF Table of Contents Generator',
@@ -527,7 +500,8 @@
         previewEmptyTitle: 'Dateien hinzufügen für Live-Vorschau',
         previewEmptyHint: 'Jede Änderung rendert das echte PDF',
         rendering: 'Vorschau wird erstellt', errorTitle: 'Render-Fehler',
-        autoPreview: 'Auto-Vorschau bei Änderung', btnDownload: 'PDF herunterladen',
+        autoPreview: 'Auto-Vorschau bei Änderung', previewPaused: 'Automatische Vorschau aus',
+        btnDownload: 'PDF herunterladen',
         btnShowPreview: 'Vorschau anzeigen', btnClose: 'Schließen',
         colorCustom: 'Eigene…', btnResetColors: 'Zurücksetzen',
         appTitle: 'PDF Inhaltsverzeichnis-Generator',
@@ -885,6 +859,8 @@
     let currentController = null;
     let currentBlobUrl = null;
     let currentFilename = null;
+    let previewDirty = false; // inputs changed since the last successful render
+    let lastStatus = 'idle';
     const DEBOUNCE_MS = 700;
 
     function inputsReady() {
@@ -895,8 +871,24 @@
     function schedulePreview() {
       if (debounceTimer) clearTimeout(debounceTimer);
       if (!inputsReady()) { showEmpty(); return; }
+      previewDirty = true;
+      if (!document.getElementById('auto-preview').checked) {
+        setStatusDot('idle', t('previewPaused'));
+        return;
+      }
       setStatusDot('staling', t('previewStale'));
       debounceTimer = setTimeout(renderPreview, DEBOUNCE_MS);
+    }
+
+    // Downloading by hand (⌘+⏎ / the button) bypasses this gate and renders.
+    function onAutoPreviewToggle() {
+      if (document.getElementById('auto-preview').checked) {
+        renderPreview();
+      } else {
+        if (debounceTimer) clearTimeout(debounceTimer);
+        setStatusDot('idle', t('previewPaused'));
+      }
+      updateDownloadButton();
     }
 
     async function renderPreview() {
@@ -954,6 +946,7 @@
         currentBlobUrl = URL.createObjectURL(blob);
         document.getElementById('preview-frame').src = currentBlobUrl + '#toolbar=0&navpanes=0';
         document.getElementById('preview-info').textContent = fmtSize(blob.size);
+        previewDirty = false;
         setStatusDot('ready', t('previewReady'));
       } catch (err) {
         if (err.name === 'AbortError') return;
@@ -993,13 +986,26 @@
       lbl.textContent = label;
       stat.className = 'text-[13px] ' + statCls;
       stat.textContent = label;
-      // Download is only valid when the current preview is fresh
-      document.getElementById('btn-generate').disabled = state !== 'ready';
+      lastStatus = state;
+      updateDownloadButton();
+    }
+
+    // The download reuses the preview blob, so it is normally gated on a
+    // fresh preview. With auto-preview off there may be no fresh preview to
+    // wait for — downloadCurrent() renders on demand instead.
+    function updateDownloadButton() {
+      const auto = document.getElementById('auto-preview').checked;
+      const usable = lastStatus === 'ready' || (!auto && inputsReady());
+      document.getElementById('btn-generate').disabled = !usable;
     }
 
     // ══════════════ Download ══════════════
-    function downloadCurrent() {
-      if (!currentBlobUrl) return;
+    async function downloadCurrent() {
+      if (!inputsReady()) return;
+      if (!currentBlobUrl || previewDirty) {
+        await renderPreview(); // never download a stale PDF
+      }
+      if (!currentBlobUrl) return; // render failed; the error is already shown
       const a = document.createElement('a');
       a.href = currentBlobUrl; a.download = currentFilename || 'inhaltsverzeichnis.pdf';
       document.body.appendChild(a); a.click(); a.remove();
