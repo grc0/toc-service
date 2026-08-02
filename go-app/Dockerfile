@@ -28,7 +28,11 @@ RUN wget -qO typst.tar.xz \
     && tar -xf typst.tar.xz \
     && mv typst-x86_64-unknown-linux-musl/typst /usr/local/bin/typst \
     && chmod +x /usr/local/bin/typst \
-    && rm -rf typst.tar.xz typst-x86_64-unknown-linux-musl
+    && rm -rf typst.tar.xz typst-x86_64-unknown-linux-musl \
+    # wget and xz-utils are only needed to fetch Typst; dropping them keeps
+    # GPL-3 tooling we do not intentionally ship out of the runtime image.
+    && apt-get purge -y --auto-remove wget xz-utils \
+    && rm -rf /var/lib/apt/lists/*
 
 # Fonts (IBM Plex Sans, Roboto, Inter)
 COPY fonts/ /usr/share/fonts/
@@ -44,6 +48,10 @@ COPY go-app/templates/ ./templates/
 COPY static/ ./static/
 COPY fonts/ ./fonts/
 
+# Attribution required by the bundled third-party licences
+COPY THIRD-PARTY-NOTICES.md LICENSE ./
+COPY licenses/ ./licenses/
+
 # Non-root user
 RUN useradd --create-home --uid 10001 appuser \
     && mkdir -p /app/data \
@@ -53,6 +61,6 @@ USER appuser
 EXPOSE 8000
 
 HEALTHCHECK --interval=30s --timeout=3s --start-period=10s --retries=3 \
-    CMD wget -qO- http://localhost:8000/health || exit 1
+    CMD ["./toc-service", "-healthcheck"]
 
 CMD ["./toc-service"]
